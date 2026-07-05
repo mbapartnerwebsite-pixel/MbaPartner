@@ -73,6 +73,23 @@ async function start() {
     console.log('Admin dashboard: http://localhost:' + PORT + '/admin');
     console.log('Data file: ' + db.DB_PATH);
   });
+
+  // ---- Free-tier keep-alive ----
+  // Render's free web services spin down after ~15 minutes with no incoming
+  // traffic, so the next real visitor eats a slow "cold start". Render sets
+  // RENDER_EXTERNAL_URL automatically in production (it's absent locally, so
+  // this is a no-op on your own machine) -- when present, ping our own
+  // /api/health every 10 minutes. That's a genuine round-trip out to the
+  // internet and back in through Render's proxy, which counts as real
+  // traffic and resets the inactivity timer, keeping the service warm
+  // without needing any third-party uptime-monitor account.
+  if (process.env.RENDER_EXTERNAL_URL) {
+    const https = require('https');
+    setInterval(function () {
+      https.get(process.env.RENDER_EXTERNAL_URL + '/api/health', function (res) { res.resume(); })
+        .on('error', function () { /* ignore -- the next scheduled ping will just retry */ });
+    }, 10 * 60 * 1000); // every 10 minutes (well under Render's ~15 min spin-down window)
+  }
 }
 
 start().catch(function (e) {
