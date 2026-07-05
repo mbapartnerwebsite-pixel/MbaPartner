@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css"/>
 <link rel="stylesheet" href="css/fonts.css"/>
 <script src="js/api-config.js"></script>
 <script src="js/auth.js"></script>
@@ -1001,46 +1001,4 @@ async function renderLeaderboard(myName,myScore,myPct){
    instead of leaving the student to find it themselves. */
 function maybeScrollToLeaderboard(){
   if(params.get('scroll')!=='leaderboard') return;
-  const el=document.querySelector('.leaderboard-sec');
-  if(el) setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),50);
-}
-
-function renderQReview(){
-  document.getElementById('qReviewList').innerHTML=QUESTIONS.map((q,i)=>{
-    const userAns=state.answers[i];
-    const correct=q.correct;
-    const isCorrect=userAns===correct;
-    const isSkipped=userAns===undefined;
-    const statusLabel=isSkipped?'Skipped':isCorrect?'Correct':'Incorrect';
-    const statusCls=isSkipped?'skipped':isCorrect?'correct':'wrong';
-    return `<div class="qr-item">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-        <div class="qr-num">Question ${i+1} &nbsp;·&nbsp; ${q.section} &nbsp;·&nbsp; Time: ${state.qTimes[i]||0}s</div>
-        <div class="qr-status ${statusCls}">
-          <i class="ti ${isCorrect?'ti-check':isSkipped?'ti-minus':'ti-x'}"></i> ${statusLabel}
-        </div>
-      </div>
-      ${q.passage?`<div class="qr-explain" style="font-style:italic;border-left:3px solid var(--orange);padding-left:12px">${q.passage.substring(0,200)}…</div>`:''}
-      <div class="qr-text">${q.q.replace(/\n/g,'<br>')}</div>
-      <div class="qr-options">
-        ${q.opts.map((o,oi)=>{
-          let cls='';
-          if(oi===correct) cls='correct';
-          else if(oi===userAns&&oi!==correct) cls='user-wrong';
-          const icon=oi===correct?'ti-check':oi===userAns&&oi!==correct?'ti-x':'ti-minus';
-          return`<div class="qr-opt ${cls}"><i class="ti ${icon}"></i> <strong>${['A','B','C','D'][oi]}.</strong> ${o}${oi===userAns?' <em style="font-size:11px;opacity:.7">(Your answer)</em>':''}</div>`;
-        }).join('')}
-      </div>
-      <div class="qr-explain"><strong>Explanation:</strong> ${q.solution}${q.wrongWhy?`<br><br><strong>Why other options are wrong:</strong><ul style="margin-top:8px;padding-left:16px">${q.wrongWhy.map((w,wi)=>wi!==correct?`<li style="margin-bottom:4px"><strong>${['A','B','C','D'][wi]}:</strong> ${w}</li>`:'').join('')}</ul>`:''}</div>
-    </div>`;
-  }).join('');
-}
-
-function backToPortal(){ window.location.href='cat-portal.html'; }
-
-/* ── UPDATE START LINK IN cat-portal.js ONCLICK ── */
-window.addEventListener('message',e=>{ if(e.data&&e.data.mock) window.location.href='mock-exam.html?mock='+e.data.mock+'&name='+encodeURIComponent(e.data.name||'')+'&dur='+(e.data.dur||40); });
-</script>
-</body>
-</html>
-
+  const el=document.querySe

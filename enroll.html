@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css"/>
 <link rel="stylesheet" href="css/fonts.css"/>
 <script src="js/site-nav.js"></script>
 <script src="js/nav-auth.js"></script>
@@ -1500,31 +1500,4 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeEnrollModal(
 // used by openEnroll()'s call chain (currentCourse, LIVE_DOMAINS,
 // COURSE_DOMAIN_REQUIREMENT, renderDomainPicker, etc.) has already been
 // declared — putting this earlier caused "Cannot access '<name>' before
-// initialization" errors (temporal dead zone) that silently broke the whole
-// script. If we were sent here from a course's "Enroll Now" on its Details
-// page (courses.html?from=enroll), open the enroll modal for that exact
-// course automatically instead of making the visitor find and click it again.
-(function () {
-  const courseId = new URLSearchParams(location.search).get('course');
-  if (courseId) openEnroll(courseId);
-})();
-
-/* ── LIVE COURSE DATA FROM ADMIN DASHBOARD ──
-   This page keeps its own local COURSES array above (for a fast first
-   paint with no loading spinner), but admin dashboard edits — price,
-   title, MRP, offer text, or a brand-new course — live in MongoDB, not
-   in this hardcoded array. courses-dynamic.js (loaded in <head>) knows
-   how to fetch and merge that live data, but it does nothing unless we
-   actually call it — this page never did, so admin edits never showed
-   up here even though every other page (courses.html, cat-enroll.html)
-   was already wired up correctly. Fetch it now and refresh whatever's
-   on screen. */
-if (typeof initCoursesDynamic === 'function') {
-  initCoursesDynamic(() => {
-    renderGrid();
-    if (currentCourse) openEnroll(currentCourse.id, currentEnrollMode === 'friend');
-  });
-}
-</script>
-</body>
-</html>
+// initialization" errors (temporal dead zon
