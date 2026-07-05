@@ -456,6 +456,8 @@ button{cursor:pointer;font-family:inherit}
   }
 }
 </style>
+<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+<script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
 
@@ -1506,6 +1508,23 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeEnrollModal(
   const courseId = new URLSearchParams(location.search).get('course');
   if (courseId) openEnroll(courseId);
 })();
+
+/* ── LIVE COURSE DATA FROM ADMIN DASHBOARD ──
+   This page keeps its own local COURSES array above (for a fast first
+   paint with no loading spinner), but admin dashboard edits — price,
+   title, MRP, offer text, or a brand-new course — live in MongoDB, not
+   in this hardcoded array. courses-dynamic.js (loaded in <head>) knows
+   how to fetch and merge that live data, but it does nothing unless we
+   actually call it — this page never did, so admin edits never showed
+   up here even though every other page (courses.html, cat-enroll.html)
+   was already wired up correctly. Fetch it now and refresh whatever's
+   on screen. */
+if (typeof initCoursesDynamic === 'function') {
+  initCoursesDynamic(() => {
+    renderGrid();
+    if (currentCourse) openEnroll(currentCourse.id, currentEnrollMode === 'friend');
+  });
+}
 </script>
 </body>
 </html>
