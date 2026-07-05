@@ -1,0 +1,20 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDEs and editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Admin server (Node backend)
+admin-server/node_modules/
+admin-server/data/db.json
+admin-server/.env
+admin-server/uploads/
+admin/node_modules/
+

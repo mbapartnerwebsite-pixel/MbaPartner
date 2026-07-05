@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>CAT / OMETs Prep Portal — MBA Partner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<link rel="stylesheet" href="css/cat-portal.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/fonts.css"/>
+  <link rel="stylesheet" href="css/chatbot-widget.css"/>
+  <script src="js/site-nav.js"></script>
+<script src="js/nav-auth.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/api-config.js"></script>
+<script src="js/site-settings.js"></script>
+<script
+  async
+  crossorigin="anonymous"
+  data-clerk-publishable-key="pk_test_bm92ZWwtbGlvbi05Mi5jbGVyay5hY2NvdW50cy5kZXYk"
+  src="https://novel-lion-92.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+  type="text/javascript"
+></script>
+</head>
+<body>
+
+<nav class="cp-nav">
+  <div class="cp-wrap cp-nav-in">
+    <a class="cp-brand" href="index.html"><div class="cp-brand-mark">M</div><div><div class="cp-brand-name">MBA Partner</div><div class="cp-brand-tag">CAT / OMETs Prep</div></div></a>
+    <div class="cp-nav-links">
+      <a href="index.html">Home</a>
+      <a href="cat-predictor.html">College Predictor</a>
+      <a href="exam-predictor.html">Exam Predictor</a>
+      <a href="cat-enroll.html">Enroll &amp; Refer</a>
+      <a class="cp-nav-call" href="tel:+917042732092">Call Us</a>
+    </div>
+    <button class="cp-mobile-menu-btn" id="cpMobileMenuBtn" aria-label="Menu"><i class="ti ti-menu-2"></i></button>
+  </div>
+  <div class="cp-mobile-nav" id="cpMobileNav">
+    <a href="index.html">Home</a>
+    <a href="cat-predictor.html">College Predictor</a>
+    <a href="exam-predictor.html">Exam Predictor</a>
+    <a href="cat-enroll.html">Enroll &amp; Refer</a>
+    <a class="cp-nav-call" href="tel:+917042732092">Call Us</a>
+  </div>
+</nav>
+<script>
+  (function(){
+    var btn=document.getElementById('cpMobileMenuBtn'), menu=document.getElementById('cpMobileNav');
+    if(btn && menu) btn.addEventListener('click', function(){ menu.classList.toggle('open'); });
+  })();
+</script>
+
+<!-- HERO -->
+<header class="cp-hero">
+  <div class="cp-wrap">
+    <div class="cp-eyebrow"><i class="ti ti-rosette"></i> Mentored by 99+ percentilers</div>
+    <h1>Your complete <span>CAT &amp; OMETs</span> prep portal</h1>
+    <p>Free material, sectional mocks, a live leaderboard, GDPI prep and domain Q&amp;A — everything to crack CAT, XAT, SNAP, NMAT, MAH-CET &amp; more.</p>
+    <div class="cp-hero-stats">
+      <div><strong>50+</strong> free sectional mocks</div>
+      <div><strong>100+</strong> past GDPI transcripts</div>
+      <div><strong>8</strong> exams covered</div>
+    </div>
+  </div>
+</header>
+
+<main class="cp-wrap">
+
+  <!-- FREE MATERIAL -->
+  <section class="cp-sec">
+    <div class="cp-sec-head"><div class="cp-label">Free Material</div><h2>VARC, QA &amp; LRDI — free to start</h2><p>Free RCs (Aristotle tricks &amp; tips), 50 sectional mocks, formula booklets and more.</p></div>
+    <div class="cp-grid" id="catMaterials"></div>
+  </section>
+
+  <!-- MOCKS -->
+  <section class="cp-sec">
+    <div class="cp-sec-head"><div class="cp-label">Mock Tests</div><h2>Take a full CAT-style mock</h2><p>Sectional timer, question palette and instant results — just like the real exam.</p></div>
+    <div class="cp-exam-select-row" style="margin-bottom:18px">
+      <label for="catMockExamSelect" style="font-size:12.5px;font-weight:600;color:var(--ink2);margin-right:8px">Exam:</label>
+      <select id="catMockExamSelect" class="cp-exam-select"></select>
+    </div>
+    <div class="cp-grid" id="catMocks"></div>
+  </section>
+
+  <!-- PYQ -->
+  <section class="cp-sec">
+    <div class="cp-sec-head"><div class="cp-label">Previous Year Questions</div><h2>Practice real past papers</h2><p>Actual CAT/XAT/SNAP questions from past years, section-wise, with full solutions.</p></div>
+    <div class="cp-exam-select-row" style="margin-bottom:14px">
+      <label for="catPyqExamSelect" style="font-size:12.5px;font-weight:600;color:var(--ink2);margin-right:8px">Exam:</label>
+      <select id="catPyqExamSelect" class="cp-exam-select"></select>
+    </div>
+    <div class="cp-pyq-filters" id="catPyqFilters" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px"></div>
+    <div class="cp-grid" id="catPyq"></div>
+  </section>
+
+  <!-- LEADERBOARD -->
+  <section class="cp-sec">
+    <div class="cp-sec-head"><div class="cp-label">Leaderboard</div><h2>Top scorers this week</h2><p>See where you stand against the community.</p></div>
+    <div class="cp-lb-wrap" id="catLeaderboard"></div>
+  </section>
+
+  <!-- GDPI -->
+  <section class="cp-sec">
+    <div class="cp-sec-head"><div class="cp-label">GDPI Flagship</div><h2>10 mock PIs · 10 mock GDs · 100+ transcripts</h2><p>Real panels and past-year transcripts to ace the final hurdle.</p></div>
+    <div class="cp-grid" id="catGdpi"></div>
+  </section>
+
+  <!-- DOMAIN Q&A -->
+  <section class="cp-sec">
+    <div class="cp-sec-head"><div class="cp-label">Domain Prep</div><h2>Domain-specific Q&amp;A</h2><p>Targeted interview question banks for every domain.</p></div>
+    <div class="cp-grid" id="catDomainQA"></div>
+  </section>
+
+  <!-- MENTORS -->
+  <section class="cp-sec">
+    <div class="cp-sec-head"><div class="cp-label">Mentors</div><h2>Mentors who just converted</h2><p>Learn from students who cracked it last season.</p></div>
+    <div class="cp-grid cp-mentors" id="catMentors"></div>
+  </section>
+
+
+</main>
+
+<footer class="cp-footer"><div class="cp-wrap">© 2026 MBA Partner · Initiative by Alumni of Old IIMs · <a href="tel:+917042732092">+91 70427 32092</a></div></footer>
+
+<script src="js/cat-portal.js"></script>
+  <script src="js/chatbot-widget.js"></script>
+</body>
+</html>
+
