@@ -818,9 +818,17 @@ async function showResults(){
   const timeUsed=Math.round((state.endTime-state.startTime)/1000);
   const minsUsed=Math.floor(timeUsed/60),secsUsed=timeUsed%60;
   const accuracy=correct+wrong>0?Math.round(correct/(correct+wrong)*100):0;
-  // Simulated percentile (based on score, ±random)
-  const basePercentile=Math.min(99.9,Math.max(30,50+score*4+Math.random()*8-4));
-  const percentile=Number(basePercentile.toFixed(1));
+  // Real percentile — how many of everyone else who's attempted this exact
+  // paper you actually beat. Used to be a fake formula based only on your
+  // own score (`50 + score*4 + random jitter`), which never looked at the
+  // leaderboard at all — that's why a 1st-rank student could still see
+  // ~50%ile. Now computed server-side against the real catAttempts data.
+  let percentile=99.9;
+  try{
+    const base=(typeof MBA_API_BASE!=='undefined'&&MBA_API_BASE)||'';
+    const r=await fetch(base+'/api/public/catAttempts/percentile?mockId='+encodeURIComponent(MOCK_ID)+'&score='+encodeURIComponent(score));
+    if(r.ok){ const d=await r.json(); if(typeof d.percentile==='number') percentile=d.percentile; }
+  }catch(e){ /* keep the 99.9 fallback if the request fails */ }
 
   // Hero
   document.getElementById('resultName').textContent=state.candName||'Student';
@@ -884,7 +892,16 @@ async function renderStoredResult(attempt){
   const correct=attempt.Correct||0, wrong=attempt.Wrong||0, skipped=attempt.Skipped||0;
   const score=attempt.Score||0, maxScore=attempt.MaxScore||(QUESTIONS.length*3);
   const pct=Math.max(0,Math.round(score/maxScore*100));
-  const percentile=attempt.Percentile!=null?attempt.Percentile:0;
+  // Recompute fresh rather than trusting the stored Percentile — older
+  // attempts were saved with the old fake formula (a real bug: 1st rank
+  // could still show ~50%ile), and even for newer ones, more people may
+  // have attempted this paper since, so the true percentile keeps shifting.
+  let percentile=attempt.Percentile!=null?attempt.Percentile:0;
+  try{
+    const base=(typeof MBA_API_BASE!=='undefined'&&MBA_API_BASE)||'';
+    const r=await fetch(base+'/api/public/catAttempts/percentile?mockId='+encodeURIComponent(MOCK_ID)+'&score='+encodeURIComponent(score)+'&excludeEmail='+encodeURIComponent(STUDENT_EMAIL||''));
+    if(r.ok){ const d=await r.json(); if(typeof d.percentile==='number') percentile=d.percentile; }
+  }catch(e){ /* keep the stored value as a fallback if the request fails */ }
   const accuracy=attempt.Accuracy!=null?attempt.Accuracy:(correct+wrong>0?Math.round(correct/(correct+wrong)*100):0);
   const timeUsed=attempt.TimeUsed||0;
   const minsUsed=Math.floor(timeUsed/60),secsUsed=timeUsed%60;
