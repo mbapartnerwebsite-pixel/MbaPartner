@@ -52,6 +52,8 @@ async function start() {
     app.use('/api/admin/' + name, makeAdminRouter(name));
   });
   app.use('/api/admin/settings', settingsRouter);
+  app.use('/api/admin/referralProgram', settingsRouter);
+  app.use('/api/admin/enrollPageCopy', settingsRouter);
   app.use('/api/admin/auth', authRouter);
   app.use('/api/admin/upload', uploadRouter); // PDF uploads (PYQ papers, etc.) -- admin only
   app.use('/api/admin/bulk-import', bulkQuestionsRouter); // Excel bulk question import -- admin only
