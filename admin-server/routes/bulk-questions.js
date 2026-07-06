@@ -312,11 +312,108 @@ function handleSimpleListImport(req, res, collection, cfg) {
   res.json({ ok: true, added: added.length, skipped });
 }
 
+/* ---------------- 3) STUDENT + ENROLLMENT IMPORT (special-case) ----------------
+   One row per student — writes to BOTH the students collection (creates the
+   login, if that email doesn't already have one) AND the enrollments
+   collection (the actual program enrollment), so onboarding ~100 students at
+   once takes one spreadsheet instead of two. */
+function handleStudentEnrollImport(req, res) {
+  let workbook;
+  try {
+    workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
+  } catch (e) {
+    return res.status(400).json({ error: 'Could not read that file — make sure it\'s a valid .xlsx or .csv file.' });
+  }
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  const rawRows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+  if (!rawRows.length) {
+    return res.status(400).json({ error: 'That file has no data rows — check it against the template.' });
+  }
+
+  const aliasMap = {
+    email: 'Email', studentemail: 'Email',
+    name: 'Name', studentname: 'Name',
+    password: 'Password',
+    programcode: 'ProgramCode', course: 'ProgramCode', courseid: 'ProgramCode',
+    progress: 'Progress',
+    nextsession: 'NextSession',
+    nextdate: 'NextDate',
+    domains: 'Domains', domain: 'Domains',
+    accessgranted: 'AccessGranted'
+  };
+
+  const rows = rawRows.map(r => {
+    const out = {};
+    Object.keys(r).forEach(k => {
+      const mapped = aliasMap[normalizeHeader(k)];
+      if (mapped) out[mapped] = typeof r[k] === 'string' ? r[k].trim() : r[k];
+    });
+    return out;
+  });
+
+  const validCourseIds = new Set(db.getCollection('courses').map(c => c.id));
+  const students = db.getCollection('students');
+  const enrollments = db.getCollection('enrollments');
+  const addedEnrollments = [];
+  const addedStudents = [];
+  const skipped = [];
+
+  rows.forEach((r, i) => {
+    const rowNum = i + 2;
+    const isBlank = !r.Email && !r.ProgramCode;
+    if (isBlank) return;
+
+    const missing = ['Email', 'ProgramCode'].filter(f => !r[f]);
+    if (missing.length) {
+      skipped.push({ row: rowNum, reason: `Missing: ${missing.join(', ')}` });
+      return;
+    }
+    if (!validCourseIds.has(r.ProgramCode)) {
+      skipped.push({ row: rowNum, reason: `No course with id "${r.ProgramCode}" — check the Courses & Pricing section for the exact id.` });
+      return;
+    }
+
+    const existingStudent = students.find(s => (s.Email || '').toLowerCase() === String(r.Email).toLowerCase());
+    if (!existingStudent) {
+      if (!r.Password) {
+        skipped.push({ row: rowNum, reason: `"${r.Email}" has no login yet — Password is required to create one.` });
+        return;
+      }
+      const newStudent = {
+        _id: db.nextId(students.concat(addedStudents)),
+        Email: r.Email,
+        Password: String(r.Password),
+        Name: r.Name || String(r.Email).split('@')[0],
+        Role: 'Student',
+        Avatar: ((r.Name || r.Email)[0] || '?').toUpperCase(),
+        CV_Done: 0, CV_Total: 5, PI_Done: 0, PI_Total: 7, GD_Done: 0, GD_Total: 7
+      };
+      addedStudents.push(newStudent);
+    }
+
+    addedEnrollments.push({
+      _id: db.nextId(enrollments.concat(addedEnrollments)),
+      Email: r.Email,
+      ProgramCode: r.ProgramCode,
+      Progress: r.Progress !== undefined && r.Progress !== '' ? Number(r.Progress) : 0,
+      NextSession: r.NextSession || '',
+      NextDate: r.NextDate || '',
+      Domains: r.Domains || '',
+      AccessGranted: r.AccessGranted || 'no'
+    });
+  });
+
+  if (addedStudents.length) db.setCollection('students', students.concat(addedStudents));
+  if (addedEnrollments.length) db.setCollection('enrollments', enrollments.concat(addedEnrollments));
+  res.json({ ok: true, added: addedEnrollments.length, newLogins: addedStudents.length, skipped });
+}
+
 router.post('/:collection', requireAuth, (req, res) => {
   const collection = req.params.collection;
   const isQuestionImport = QUESTION_COLLECTIONS.has(collection);
+  const isStudentEnrollImport = collection === 'enrollments';
   const simpleCfg = SIMPLE_LIST_CONFIGS[collection];
-  if (!isQuestionImport && !simpleCfg) {
+  if (!isQuestionImport && !isStudentEnrollImport && !simpleCfg) {
     return res.status(400).json({ error: 'Bulk import is not available for this section.' });
   }
 
@@ -325,6 +422,7 @@ router.post('/:collection', requireAuth, (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded.' });
 
     if (isQuestionImport) return handleQuestionImport(req, res, collection);
+    if (isStudentEnrollImport) return handleStudentEnrollImport(req, res);
     return handleSimpleListImport(req, res, collection, simpleCfg);
   });
 });

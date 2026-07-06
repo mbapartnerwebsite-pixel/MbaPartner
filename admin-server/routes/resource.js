@@ -176,8 +176,31 @@ function makeAdminRouter(name) {
   });
 
   router.post('/', (req, res) => {
+    const body = { ...req.body };
+    // Enrollments: if the admin filled in Password (and the student has no
+    // login yet), create that login here in the same save — no separate
+    // "add a student" step needed for people onboarded straight into a program.
+    if (name === 'enrollments' && body.Email && body.Password) {
+      try {
+        const students = db.getCollection('students');
+        const existing = students.find(s => (s.Email || '').toLowerCase() === String(body.Email).toLowerCase());
+        if (!existing) {
+          students.push({
+            _id: db.nextId(students),
+            Email: body.Email,
+            Password: String(body.Password),
+            Name: body.Name || String(body.Email).split('@')[0],
+            Role: 'Student',
+            Avatar: ((body.Name || body.Email)[0] || '?').toUpperCase(),
+            CV_Done: 0, CV_Total: 5, PI_Done: 0, PI_Total: 7, GD_Done: 0, GD_Total: 7
+          });
+          db.setCollection('students', students);
+        }
+      } catch (e) { /* nice-to-have — never block the actual enrollment save */ }
+    }
+    if (name === 'enrollments') { delete body.Password; delete body.Name; }
     const rows = db.getCollection(name);
-    const record = { _id: db.nextId(rows), ...req.body };
+    const record = { _id: db.nextId(rows), ...body };
     rows.push(record);
     db.setCollection(name, rows);
     // A brand-new course should already have its Study Materials row waiting

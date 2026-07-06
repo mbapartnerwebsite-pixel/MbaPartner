@@ -88,7 +88,13 @@ async function handleLogin() {
 
   await ensureData();
   const acctLogin = window.MBAauth ? MBAauth.login(email, pass) : { ok: false };
-  const ok = acctLogin.ok || checkCredentials(DASH_DATA, email, pass);
+  // Local demo-account check first (no network needed); otherwise ask the
+  // backend to verify — the browser never holds real student passwords
+  // anymore, so this is the only way to check a real account's credentials.
+  let ok = acctLogin.ok || checkCredentials(DASH_DATA, email, pass);
+  if (!ok && typeof checkCredentialsServer === 'function') {
+    ok = await checkCredentialsServer(email, pass);
+  }
 
   setTimeout(() => {
     btn.classList.remove('loading');
@@ -99,6 +105,28 @@ async function handleLogin() {
     if (ret) { location.href = ret; return; }
     enterDashboard(email.trim().toLowerCase());
   }, 500);
+}
+
+/* ---------- SELF-SERVICE PASSWORD CHANGE ---------- */
+async function changePassword() {
+  const email = (currentUser && currentUser.email) || '';
+  const oldEl = document.getElementById('pwCurrent');
+  const newEl = document.getElementById('pwNewSelf');
+  const msgEl = document.getElementById('pwChangeMsg');
+  if (!email || !oldEl || !newEl) return;
+  const oldPassword = oldEl.value, newPassword = newEl.value;
+  if (msgEl) { msgEl.textContent = ''; }
+  if (!oldPassword || !newPassword) {
+    if (msgEl) { msgEl.textContent = 'Enter your current and new password.'; msgEl.style.color = '#e5484d'; }
+    return;
+  }
+  try {
+    await changePasswordServer(email, oldPassword, newPassword);
+    oldEl.value = ''; newEl.value = '';
+    if (msgEl) { msgEl.textContent = 'Password updated.'; msgEl.style.color = '#2f9e44'; }
+  } catch (e) {
+    if (msgEl) { msgEl.textContent = e.message; msgEl.style.color = '#e5484d'; }
+  }
 }
 function doSignup() {
   const nameEl = document.getElementById('nameInput');
@@ -493,7 +521,7 @@ function emptyState(icon, title, sub) {
 }
 
 /* ---------- PAGE SWITCHING ---------- */
-const pageTitles = { overview: 'Overview', courses: 'My Courses', sessions: 'Sessions', materials: 'Materials & Drive', progress: 'CV & PI Progress' };
+const pageTitles = { overview: 'Overview', courses: 'My Courses', sessions: 'Sessions', materials: 'Materials & Drive', progress: 'CV & PI Progress', account: 'Account' };
 function switchPage(page, btn) {
   document.querySelectorAll('.dash-page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');

@@ -15,6 +15,7 @@ const { router: uploadRouter, UPLOAD_DIR } = require('./routes/upload');
 const bulkQuestionsRouter = require('./routes/bulk-questions');
 const catAttemptsRouter = require('./routes/cat-attempts');
 const referralsRoutes = require('./routes/referrals');
+const studentsPublicRouter = require('./routes/students-public');
 
 async function start() {
   // Connect to MongoDB (or fall back to the local file) BEFORE seeding --
@@ -38,6 +39,7 @@ async function start() {
   COLLECTIONS.forEach(function (name) {
     if (ADMIN_ONLY.has(name)) return;
     if (name === 'catAttempts') return; // custom router below (scoped reads + duplicate-attempt check)
+    if (name === 'students') return; // custom router below (strips Password, adds login/change-password)
     if (PUBLIC_WRITE_ONLY.has(name)) app.use('/api/public/' + name, makePublicWriteRouter(name));
     else app.use('/api/public/' + name, makePublicRouter(name));
   });
@@ -46,6 +48,7 @@ async function start() {
   app.use('/api/public/razorpay', razorpayRouter);
   app.use('/api/public/catAttempts', catAttemptsRouter); // POST (submit) + GET /mine (scoped to one email)
   app.use('/api/public/referrals', referralsRoutes.publicRouter); // GET /:email — a student's own referral dashboard
+  app.use('/api/public/students', studentsPublicRouter); // GET (Password stripped) + POST /login + POST /change-password
 
   // ---- Admin API (every route below requires a valid admin token) ----
   COLLECTIONS.forEach(function (name) {

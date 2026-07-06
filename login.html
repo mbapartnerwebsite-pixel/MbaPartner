@@ -131,6 +131,9 @@
         <button class="nav-item" data-page="progress" onclick="switchPage('progress',this)">
           <i class="ti ti-chart-bar"></i> CV & PI Progress
         </button>
+        <button class="nav-item" data-page="account" onclick="switchPage('account',this)">
+          <i class="ti ti-lock"></i> Account
+        </button>
 
         <div class="nav-section-lbl" style="margin-top:8px">Community</div>
         <button class="nav-item" onclick="window.open('https://chat.whatsapp.com/EdyvGJbQoV9Jj6eC0slSx9','_blank')">
@@ -231,6 +234,24 @@
             <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:4px">Mock PI & GD Tracker</h3>
             <p style="font-size:12px;color:var(--ink2);font-family:'Inter',sans-serif">7 PIs + 7 GDs included in your bootcamp</p>
             <div class="pi-grid" id="piGrid"></div>
+          </div>
+        </div>
+
+        <!-- ===== PAGE: ACCOUNT ===== -->
+        <div class="dash-page" id="page-account">
+          <div style="max-width:420px;background:#fff;border-radius:14px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,.06)">
+            <h3 style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:4px">Change password</h3>
+            <p style="font-size:12.5px;color:var(--ink2);font-family:'Inter',sans-serif;margin-bottom:16px">Update the password you use to sign in to your student dashboard.</p>
+            <div style="margin-bottom:12px">
+              <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:4px">Current password</label>
+              <input type="password" id="pwCurrent" style="width:100%;padding:10px 12px;border:1px solid #e2e5ec;border-radius:8px;font-size:13.5px"/>
+            </div>
+            <div style="margin-bottom:16px">
+              <label style="display:block;font-size:12.5px;font-weight:600;margin-bottom:4px">New password (min 8 characters)</label>
+              <input type="password" id="pwNewSelf" style="width:100%;padding:10px 12px;border:1px solid #e2e5ec;border-radius:8px;font-size:13.5px"/>
+            </div>
+            <button class="welcome-cta" onclick="changePassword()" style="width:auto">Update password</button>
+            <div id="pwChangeMsg" style="margin-top:10px;font-size:12.5px"></div>
           </div>
         </div>
 

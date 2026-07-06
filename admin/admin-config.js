@@ -99,6 +99,7 @@ const ADMIN_SECTIONS = [
       { name: 'College', label: 'College', type: 'text' },
       { name: 'Items', label: 'Items purchased', type: 'text', col: true },
       { name: 'ItemIds', label: 'Item course IDs (internal — used to auto-link the student dashboard)', type: 'text' },
+      { name: 'Domains', label: 'Live Project domain(s) chosen at checkout (internal JSON — used to auto-fill Enrollments)', type: 'text', col: true },
       { name: 'Total', label: 'Total (₹)', type: 'number', col: true },
       { name: 'Coupon', label: 'Coupon used', type: 'text' },
       { name: 'submittedAt', label: 'Submitted at', type: 'text', col: true }
@@ -357,15 +358,22 @@ const ADMIN_SECTIONS = [
   },
   {
     key: 'enrollments', label: 'Enrollments', icon: 'ti-clipboard-check', group: 'Student dashboard',
-    desc: 'Which student is enrolled in which program, and their progress. One row per student per program. Materials/Drive links for a course only show up on the student\'s dashboard once you flip "Drive access granted" to Yes here — since Drive folders are private and you have to individually share them with the student\'s email first. The student gets a notification banner on their dashboard the next time they log in after you do this.',
+    desc: 'Which student is enrolled in which program, and their progress. One row per student per program. Materials/Drive links for a course only show up on the student\'s dashboard once you flip "Drive access granted" to Yes here — since Drive folders are private and you have to individually share them with the student\'s email first. The student gets a notification banner on their dashboard the next time they log in after you do this. If this student doesn\'t have a login yet, fill in Name + Password below and it will be created automatically when you save.',
     admin: true,
+    bulkImport: {
+      itemLabel: 'enrollment', keepAddButton: true,
+      headers: ['Email', 'Name', 'Password', 'ProgramCode', 'Progress', 'NextSession', 'NextDate', 'Domains', 'AccessGranted'],
+      sample: ['student@example.com', 'Student Name', 'temp1234', 'placement-bootcamp', '0', '', '', '', 'no']
+    },
     fields: [
       { name: 'Email', label: 'Student email (must match a Students row)', type: 'text', required: true, col: true },
+      { name: 'Name', label: 'Student name (only needed if creating a new login — leave blank if the student already has one)', type: 'text' },
+      { name: 'Password', label: 'Login password (only needed if creating a new login — leave blank if the student already has one)', type: 'text' },
       { name: 'ProgramCode', label: 'Program code (must match a Programs row)', type: 'text', required: true, col: true },
       { name: 'Progress', label: 'Progress % (0-100)', type: 'number', col: true },
       { name: 'NextSession', label: 'Next session name', type: 'text' },
       { name: 'NextDate', label: 'Next date', type: 'text' },
-      { name: 'Domains', label: 'Live Project domain(s) chosen at checkout (comma-separated key, e.g. "marketing" or "marketing,hr") — auto-filled by Razorpay checkout', type: 'text' },
+      { name: 'Domains', label: 'Live Project domain(s) chosen at checkout (comma-separated key, e.g. "marketing" or "marketing,hr") — auto-filled by Razorpay checkout', type: 'text', col: true },
       { name: 'AccessGranted', label: 'Drive access granted to student? (share the Drive folder with their email first, then set this to Yes)', type: 'select', options: ['no', 'yes'], col: true }
     ]
   },

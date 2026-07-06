@@ -237,10 +237,44 @@ function guessIcon(title, type) {
   return 'ti-book-2';
 }
 
-/* Check login credentials against the Students tab. */
+/* Check login credentials against the Students tab. Kept only as a fallback
+   for the Google-Sheet demo mode (SAMPLE_DATA/sheet-tab path), where the
+   Password field is still present client-side. The real admin-server API
+   path no longer sends Password to the browser at all — see
+   checkCredentialsServer() below, which is what actually verifies logins
+   against the live backend. */
 function checkCredentials(data, email, password) {
   const s = data.students.find(x => _lc(x.Email) === _lc(email));
-  return !!(s && String(s.Password) === String(password));
+  return !!(s && s.Password !== undefined && String(s.Password) === String(password));
+}
+
+/* Verify credentials server-side (admin-server never sends Password to the
+   browser, so this is the only real way to check a login against it). */
+async function checkCredentialsServer(email, password) {
+  try {
+    const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
+    const res = await fetch(base + '/api/public/students/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    if (!res.ok) return false;
+    const data = await res.json();
+    return !!data.ok;
+  } catch (e) { return false; }
+}
+
+/* Self-service password change — verified + applied server-side. */
+async function changePasswordServer(email, oldPassword, newPassword) {
+  const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
+  const res = await fetch(base + '/api/public/students/change-password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, oldPassword, newPassword })
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || !data.ok) throw new Error(data.error || 'Could not update password.');
+  return data;
 }
 
 /* Assemble one student's complete dashboard view by joining tabs. */
@@ -401,5 +435,5 @@ function buildStudentView(data, email) {
 
 // Expose for Node-based tests; ignored in the browser.
 if (typeof module !== 'undefined') {
-  module.exports = { SHEET_CONFIG, SAMPLE_DATA, loadAllData, checkCredentials, buildStudentView };
+  module.exports = { SHEET_CONFIG, SAMPLE_DATA, loadAllData, checkCredentials, checkCredentialsServer, changePasswordServer, buildStudentView };
 }

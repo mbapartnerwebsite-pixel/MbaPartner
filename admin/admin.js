@@ -89,7 +89,7 @@ function initDashboard() {
   const groups = {};
   ADMIN_SECTIONS.forEach(s => { (groups[s.group] = groups[s.group] || []).push(s); });
 
-  let html = '';
+  let html = `<div class="sb-group-lbl">Overview</div><a href="#" class="sb-link" data-sec="__overview"><i class="ti ti-layout-dashboard"></i> Overview</a>`;
   Object.keys(groups).forEach(g => {
     html += `<div class="sb-group-lbl">${g}</div>`;
     groups[g].forEach(s => {
@@ -110,8 +110,7 @@ function initDashboard() {
     if (el) el.textContent = 'Signed in as ' + me.username;
   }).catch(() => {});
 
-  const first = ADMIN_SECTIONS[0].key;
-  selectSection(location.hash ? location.hash.slice(1) : first);
+  selectSection(location.hash ? location.hash.slice(1) : '__overview');
 }
 
 function selectSection(key) {
@@ -119,6 +118,7 @@ function selectSection(key) {
   location.hash = key;
   document.querySelectorAll('.sb-link').forEach(a => a.classList.toggle('active', a.dataset.sec === key));
   if (key === '__account') return renderAccountSection();
+  if (key === '__overview') return renderOverviewSection();
   const section = ADMIN_SECTIONS.find(s => s.key === key);
   if (!section) return;
   if (section.custom === 'referralPayouts') renderReferralPayoutsSection(section);
@@ -209,6 +209,63 @@ async function loadPayoutsHistory() {
   wrap.innerHTML = html;
 }
 
+/* ---------------- OVERVIEW (landing page) ----------------
+   A quick at-a-glance summary so the admin doesn't have to click into every
+   section just to see how things are going — total students, enrollments,
+   orders/revenue, and leads, pulled straight from the same collections the
+   rest of the dashboard already uses. */
+const OVERVIEW_CARDS = [
+  { key: 'students', label: 'Students (logins)', icon: 'ti-users' },
+  { key: 'enrollments', label: 'Enrollments', icon: 'ti-clipboard-check' },
+  { key: 'orders', label: 'Orders (checkout)', icon: 'ti-shopping-cart' },
+  { key: 'leads', label: 'Leads', icon: 'ti-mail' }
+];
+
+async function renderOverviewSection() {
+  const main = document.getElementById('main');
+  main.innerHTML = mainHead('Overview', 'A quick look at what\'s happening across the site.') +
+    `<div class="overview-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px" id="overviewCards"></div>
+     <div class="panel">
+       <div class="main-title" style="font-size:15px;margin-bottom:10px">Recent orders</div>
+       <div class="table-wrap" id="overviewRecentOrders"><div class="empty-msg">Loading…</div></div>
+     </div>`;
+
+  const cardsWrap = document.getElementById('overviewCards');
+  cardsWrap.innerHTML = OVERVIEW_CARDS.map(c => `
+    <div class="panel" style="padding:18px">
+      <i class="ti ${c.icon}" style="font-size:20px;color:var(--orange,#ff7a1a)"></i>
+      <div style="font-size:26px;font-weight:800;margin-top:8px" id="ov-${c.key}">—</div>
+      <div style="font-size:12.5px;color:var(--ink2,#8a8f9c)">${c.label}</div>
+    </div>`).join('');
+
+  const results = await Promise.all(OVERVIEW_CARDS.map(c =>
+    api('/admin/' + c.key).then(rows => ({ key: c.key, rows })).catch(() => ({ key: c.key, rows: [] }))
+  ));
+
+  let totalRevenue = 0;
+  results.forEach(({ key, rows }) => {
+    const el = document.getElementById('ov-' + key);
+    if (el) el.textContent = Array.isArray(rows) ? rows.length : '—';
+    if (key === 'orders' && Array.isArray(rows)) {
+      totalRevenue = rows.reduce((sum, r) => sum + (Number(r.Total) || 0), 0);
+    }
+  });
+
+  const ordersData = (results.find(r => r.key === 'orders') || {}).rows || [];
+  const wrap = document.getElementById('overviewRecentOrders');
+  if (!ordersData.length) {
+    wrap.innerHTML = '<div class="empty-msg">No orders yet.</div>';
+  } else {
+    const recent = ordersData.slice().sort((a, b) => new Date(b.submittedAt || 0) - new Date(a.submittedAt || 0)).slice(0, 8);
+    let html = `<table class="dtab"><thead><tr><th>Name</th><th>Email</th><th>Items</th><th>Total</th><th>Date</th></tr></thead><tbody>`;
+    recent.forEach(r => {
+      html += `<tr><td>${r.Name || '—'}</td><td>${r.Email || '—'}</td><td>${r.Items || '—'}</td><td>₹${Number(r.Total || 0).toLocaleString('en-IN')}</td><td>${r.submittedAt ? new Date(r.submittedAt).toLocaleDateString('en-IN') : '—'}</td></tr>`;
+    });
+    html += `</tbody></table><div style="margin-top:10px;font-size:13px;color:var(--ink2,#8a8f9c)">Total revenue across all orders: <b>₹${totalRevenue.toLocaleString('en-IN')}</b></div>`;
+    wrap.innerHTML = html;
+  }
+}
+
 /* ---------------- ACCOUNT / CHANGE PASSWORD ---------------- */
 function renderAccountSection() {
   const main = document.getElementById('main');
@@ -292,6 +349,10 @@ const SIMPLE_BULK_TEMPLATES = {
   coupons: {
     headers: ['Code', 'Type', 'Value', 'Course IDs', 'Restricted Email', 'Active', 'Usage Limit', 'Note'],
     sample: ['GROUP20', 'percent', '20', 'placement-bootcamp|gdpi-flagship', '', 'yes', '', 'Referral discount']
+  },
+  enrollments: {
+    headers: ['Email', 'Name', 'Password', 'ProgramCode', 'Progress', 'NextSession', 'NextDate', 'Domains', 'AccessGranted'],
+    sample: ['student@example.com', 'Student Name', 'temp1234', 'placement-bootcamp', '0', '', '', '', 'no']
   }
 };
 
@@ -589,6 +650,31 @@ async function loadAndRenderTable(section) {
         return base + ' — ' + (domainOpt ? domainOpt.label : r.Domain);
       }
       return base;
+    }
+    // Enrollments: Domains is stored as a comma-separated list of domain keys
+    // (e.g. "marketing,hr") — show the human-readable labels instead.
+    if (section.key === 'enrollments' && f.name === 'Domains' && v) {
+      return String(v).split(',').map(k => {
+        const opt = LIVE_DOMAIN_OPTIONS.find(d => d.key === k.trim());
+        return opt ? opt.label : k.trim();
+      }).filter(Boolean).join(', ');
+    }
+    // Orders: Domains is stored as an internal JSON blob (per line item) —
+    // flatten it into a readable "Item: domain, domain" string.
+    if (section.key === 'orders' && f.name === 'Domains' && v) {
+      try {
+        const parsed = typeof v === 'string' ? JSON.parse(v) : v;
+        if (Array.isArray(parsed) && parsed.length) {
+          return parsed.map(entry => {
+            const doms = (entry.domains || []).map(k => {
+              const opt = LIVE_DOMAIN_OPTIONS.find(d => d.key === k);
+              return opt ? opt.label : k;
+            }).join(', ');
+            return doms ? (entry.id ? entry.id + ': ' + doms : doms) : '';
+          }).filter(Boolean).join(' | ');
+        }
+      } catch (e) { /* not JSON — fall through and show raw value below */ }
+      return String(v);
     }
     if (f.type === 'ref' && v) return String(resolveRefLabel(f, v));
     if (f.type === 'multiref' && Array.isArray(v)) return v.map(x => resolveRefLabel(f, x)).join(', ');
