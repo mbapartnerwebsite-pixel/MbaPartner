@@ -94,8 +94,14 @@ function autoProvisionFromSubmission(name, record) {
       // would create broken/unmatched cards on the MBA student dashboard
       // (js/dashboard-data.js joins Enrollments -> courses by ProgramCode).
       // CAT has no course-access dashboard of its own yet, so there's
-      // nothing useful to provision here beyond the login itself.
-      if (record.Portal === 'CAT') return;
+      // nothing useful to provision here beyond the login itself — but a
+      // referral code used on a CAT order should still credit the referrer
+      // (referral codes are shared across both portals), so that runs
+      // before this early return, not skipped along with it.
+      if (record.Portal === 'CAT') {
+        try { creditReferralIfApplicable(record); } catch (e) { console.error('Referral crediting failed:', e); }
+        return;
+      }
       const ids = String(record.ItemIds || '').split(',').map(s => s.trim()).filter(Boolean);
       const titles = String(record.Items || '').split(',').map(s => s.trim());
       // record.Domains (if present) is a JSON string: [{ id: 'live-2', domains: ['marketing','hr'] }, ...]
