@@ -569,6 +569,18 @@ document.getElementById('preQCount').textContent=QUESTIONS.length+' questions';
    questions when the real admin-uploaded set (e.g. 25 questions) existed
    but hadn't finished loading yet. */
 let questionsLoading=true;
+// Render's free tier can take a while to wake up from a cold start, and a
+// plain fetch() has no built-in timeout — if the request never settles (a
+// slow wake-up, a dropped connection, whatever), the page was stuck showing
+// "Loading questions…" forever with the Start button disabled and no way
+// out except a hard refresh. Give each request a hard ceiling so the page
+// always moves on (falling back to the embedded demo questions) instead of
+// waiting indefinitely.
+function fetchWithTimeout(url, ms){
+  const ctrl=new AbortController();
+  const timer=setTimeout(()=>ctrl.abort(), ms);
+  return fetch(url,{signal:ctrl.signal}).finally(()=>clearTimeout(timer));
+}
 (async function loadAdminAuthoredQuestions(){
   try{
     // The frontend (Vercel) and backend API (Render) live on different
@@ -577,8 +589,8 @@ let questionsLoading=true;
     // MBA_API_BASE (from js/api-config.js) points at the real Render URL.
     const base=(typeof MBA_API_BASE!=='undefined'&&MBA_API_BASE)||'';
     const [qs,pyqQs]=await Promise.all([
-      fetch(base+'/api/public/catQuestions').then(r=>r.ok?r.json():[]),
-      fetch(base+'/api/public/catPyqQuestions').then(r=>r.ok?r.json():[])
+      fetchWithTimeout(base+'/api/public/catQuestions',20000).then(r=>r.ok?r.json():[]),
+      fetchWithTimeout(base+'/api/public/catPyqQuestions',20000).then(r=>r.ok?r.json():[])
     ]);
     const rows=[...qs,...pyqQs].filter(r=>r.MockID===MOCK_ID);
     if(rows.length){
@@ -611,7 +623,7 @@ let attemptCheckLoading=true;
   if(!STUDENT_EMAIL){ attemptCheckLoading=false; return; }
   try{
     const base=(typeof MBA_API_BASE!=='undefined'&&MBA_API_BASE)||'';
-    const res=await fetch(base+'/api/public/catAttempts/mine?email='+encodeURIComponent(STUDENT_EMAIL)+'&mockId='+encodeURIComponent(MOCK_ID));
+    const res=await fetchWithTimeout(base+'/api/public/catAttempts/mine?email='+encodeURIComponent(STUDENT_EMAIL)+'&mockId='+encodeURIComponent(MOCK_ID),20000);
     const rows=res.ok?await res.json():[];
     if(Array.isArray(rows)&&rows.length) existingAttempt=rows[0];
   }catch(e){ /* API unreachable — fail open, exam proceeds as a first attempt */ }
