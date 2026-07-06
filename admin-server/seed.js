@@ -80,7 +80,36 @@ const SETTINGS = {
   // now each has its own real Drive folder.
   brochureUrl: 'https://drive.google.com/drive/folders/1H9U8vzaxNepauDrvcodt9e4HLFU02X4K',
   compendiumUrl: 'https://drive.google.com/drive/folders/1Ir9BWGjYgYsLJwneq9WoTI6dbDezXS_H',
-  sampleCvUrl: 'https://drive.google.com/drive/folders/18bj7C4I4Ro1DcOBfzF6xrEhNI7SmEZe2'
+  sampleCvUrl: 'https://drive.google.com/drive/folders/18bj7C4I4Ro1DcOBfzF6xrEhNI7SmEZe2',
+
+  // ----- Referral Program (Enroll & Refer page) -----
+  // These four numbers drive every "₹750" / "10%" / "20%" mention on
+  // enroll.html and the actual checkout math — change one here and it
+  // updates everywhere at once (see REFERRAL-SYSTEM-SPEC.md).
+  referralBonusAmount: 750,
+  referralDiscountPercent: 10,
+  friendEnrollDiscountPercent: 20,
+  referralConfirmDays: 7,
+
+  // ----- Enroll & Refer page copy -----
+  // Free-form text blocks on enroll.html — {{bonus}}, {{referralDiscount}}
+  // and {{friendDiscount}} tokens get swapped for the numbers above, so the
+  // wording never goes stale when the numbers change.
+  enrollHeroEyebrow: 'Enroll & Earn Together',
+  enrollHeroHeadline: 'Browse, Pick & Enroll Now',
+  enrollHeroSubtext: 'All MBA Partner programs in one place. Apply referral codes for discounts, or enroll with a friend to get {{friendDiscount}} off.',
+  referBannerHeadline: 'Share your referral code',
+  referBannerBody: 'Every friend who enrolls using your code earns you {{bonus}} cash bonus — and they get {{referralDiscount}} off their first course.',
+  referSectionHeadline: 'Refer & Earn {{bonus}} per Friend',
+  referSectionBody: 'Share your unique referral code with fellow MBA students. When they enroll in any course, you both win — they get {{referralDiscount}} off and you earn {{bonus}} credited to your account.',
+  referCard1Title: '{{bonus}} Referral Bonus',
+  referCard1Body: "Credited after your friend's payment is confirmed",
+  referCard2Title: '{{referralDiscount}} Off for Your Friend',
+  referCard2Body: 'Instant discount applied at checkout on any course',
+  referCard3Title: 'Track Every Referral',
+  referCard3Body: 'See your code, earnings and successful referrals in real time',
+  referCard4Title: 'No Limit',
+  referCard4Body: 'Refer as many friends as you like — earnings stack up'
 };
 
 const PLACEMENTS = [

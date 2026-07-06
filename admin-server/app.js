@@ -14,6 +14,7 @@ const authRouter = require('./routes/auth');
 const { router: uploadRouter, UPLOAD_DIR } = require('./routes/upload');
 const bulkQuestionsRouter = require('./routes/bulk-questions');
 const catAttemptsRouter = require('./routes/cat-attempts');
+const referralsRoutes = require('./routes/referrals');
 
 async function start() {
   // Connect to MongoDB (or fall back to the local file) BEFORE seeding --
@@ -44,6 +45,7 @@ async function start() {
   app.use('/api/public/coupons', couponsRouter); // exposes POST /api/public/coupons/validate
   app.use('/api/public/razorpay', razorpayRouter);
   app.use('/api/public/catAttempts', catAttemptsRouter); // POST (submit) + GET /mine (scoped to one email)
+  app.use('/api/public/referrals', referralsRoutes.publicRouter); // GET /:email — a student's own referral dashboard
 
   // ---- Admin API (every route below requires a valid admin token) ----
   COLLECTIONS.forEach(function (name) {
@@ -53,6 +55,7 @@ async function start() {
   app.use('/api/admin/auth', authRouter);
   app.use('/api/admin/upload', uploadRouter); // PDF uploads (PYQ papers, etc.) -- admin only
   app.use('/api/admin/bulk-import', bulkQuestionsRouter); // Excel bulk question import -- admin only
+  app.use('/api/admin/referrals', referralsRoutes.adminRouter); // payouts-due / payouts / mark-paid -- admin only
 
   app.get('/api/health', function (req, res) { res.json({ ok: true }); });
 

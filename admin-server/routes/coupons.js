@@ -1,5 +1,6 @@
 const express = require('express');
 const db = require('../lib/db');
+const { findStudentByReferralCode } = require('./referrals');
 const router = express.Router();
 
 router.post('/validate', (req, res) => {
@@ -8,6 +9,25 @@ router.post('/validate', (req, res) => {
   const coupons = db.getCollection('coupons');
   const coupon = coupons.find(c => (c.code || '').toUpperCase() === String(code).toUpperCase());
   if (!coupon || !coupon.active) {
+    // Not an admin-created coupon (or it's been turned off) — check whether
+    // this is actually a student's referral code instead. Referral codes
+    // are generated server-side per student (routes/referrals.js), never in
+    // the browser, so this works no matter which device the friend is on.
+    const referrer = findStudentByReferralCode(code);
+    if (referrer) {
+      const given = String(email || '').trim().toLowerCase();
+      if (given && given === String(referrer.Email || '').trim().toLowerCase()) {
+        return res.json({ valid: false, message: 'You can\'t use your own referral code.' });
+      }
+      const settings = db.getSingleton('settings');
+      const pct = Number(settings.referralDiscountPercent) || 10;
+      const base = Number(subtotal) || 0;
+      const discount = Math.round(base * pct / 100);
+      return res.json({
+        valid: true, code: referrer.referralCode, type: 'percent', value: pct, discount,
+        message: `Referral code applied — ${pct}% off!`, isReferral: true
+      });
+    }
     return res.json({ valid: false, message: 'Invalid coupon code' });
   }
   if (coupon.expiresAt && new Date(coupon.expiresAt) < new Date()) {
