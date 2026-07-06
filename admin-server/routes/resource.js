@@ -1,6 +1,10 @@
 const express = require('express');
 const db = require('../lib/db');
 const { requireAuth } = require('../lib/auth');
+// Lazy require to avoid a circular require at module-load time (referrals.js
+// doesn't itself require resource.js, but this keeps the dependency direction
+// explicit): referral crediting on a completed order, see creditReferralIfApplicable below.
+const { creditReferralIfApplicable } = require('./referrals');
 
 const ADMIN_ONLY = new Set(['adminUsers']);
 
@@ -30,11 +34,22 @@ function autoProvisionStudent(email, name) {
   const students = db.getCollection('students');
   const existing = students.find(s => (s.Email || '').toLowerCase() === email.toLowerCase());
   if (existing) return existing;
+  // Every student gets their own referral code the moment their account is
+  // created — server-side, so it works from any device (not the old
+  // localStorage-only version). Guard against the vanishingly unlikely
+  // collision with an existing code.
+  const genCode = () => {
+    const n = String(name || email).toUpperCase().replace(/[^A-Z]/g, '').substring(0, 3) || 'MBA';
+    return n + Math.floor(1000 + Math.random() * 9000);
+  };
+  let referralCode = genCode();
+  while (students.some(s => s.referralCode === referralCode)) referralCode = genCode();
   const rec = {
     _id: db.nextId(students),
     Email: email, Password: '', Name: name || email.split('@')[0], Role: 'Student',
     Avatar: ((name || email)[0] || '?').toUpperCase(),
-    CV_Done: 0, CV_Total: 5, PI_Done: 0, PI_Total: 7, GD_Done: 0, GD_Total: 7
+    CV_Done: 0, CV_Total: 5, PI_Done: 0, PI_Total: 7, GD_Done: 0, GD_Total: 7,
+    referralCode
   };
   students.push(rec);
   db.setCollection('students', students);
@@ -99,6 +114,10 @@ function autoProvisionFromSubmission(name, record) {
         autoProvisionProgram(id, titles[i]);
         autoProvisionEnrollment(record.Email, id, domainMap[id] || '');
       });
+      // If this order's Coupon field is actually a student's referral code
+      // (not an admin coupon like GROUP20/MBA10), credit the referrer —
+      // see routes/referrals.js. Never blocks the order itself if it fails.
+      try { creditReferralIfApplicable(record); } catch (e) { console.error('Referral crediting failed:', e); }
     } else if (name === 'enrollmentRequests' && record.Email) {
       // NOTE: this fire-and-forget request from enroll.html is only a
       // signup/lead log for the admin dashboard — it fires in parallel with

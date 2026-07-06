@@ -167,6 +167,41 @@ const ADMIN_SECTIONS = [
     ]
   },
   {
+    key: 'referralProgram', label: 'Referral Program', icon: 'ti-gift', group: 'Site content', singleton: true,
+    desc: 'The numbers behind the "Enroll & Refer" page — the ₹ bonus a student earns per successful referral, the % discount their friend gets, the % off for "Enroll with a Friend", and how many days before a pending referral is confirmed (covers refund/chargeback windows). Change any of these and every mention of it on the Enroll & Refer page updates automatically — see "Enroll & Refer Page Copy" below.',
+    fields: [
+      { name: 'referralBonusAmount', label: 'Referral bonus (₹ credited to the referrer per successful referral)', type: 'number' },
+      { name: 'referralDiscountPercent', label: 'Referral code discount (% off for the friend who uses a referral code)', type: 'number' },
+      { name: 'friendEnrollDiscountPercent', label: '"Enroll with a Friend" discount (% off each person in a joint checkout)', type: 'number' },
+      { name: 'referralConfirmDays', label: 'Days before a pending referral auto-confirms (covers refund window)', type: 'number' }
+    ]
+  },
+  {
+    key: 'enrollPageCopy', label: 'Enroll & Refer Page Copy', icon: 'ti-file-text', group: 'Site content', singleton: true,
+    desc: 'The headline and body text on the Enroll & Refer page. Use {{bonus}}, {{referralDiscount}} and {{friendDiscount}} anywhere you want the live numbers from "Referral Program" above to appear — they\'re swapped in automatically, so this text never goes stale when you change a number.',
+    fields: [
+      { name: 'enrollHeroEyebrow', label: 'Hero — small label above the headline', type: 'text' },
+      { name: 'enrollHeroHeadline', label: 'Hero — headline', type: 'text' },
+      { name: 'enrollHeroSubtext', label: 'Hero — subtext', type: 'textarea' },
+      { name: 'referBannerHeadline', label: 'Refer banner — headline', type: 'text' },
+      { name: 'referBannerBody', label: 'Refer banner — body text', type: 'textarea' },
+      { name: 'referSectionHeadline', label: '"Refer & Earn" section — headline', type: 'text' },
+      { name: 'referSectionBody', label: '"Refer & Earn" section — body text', type: 'textarea' },
+      { name: 'referCard1Title', label: 'Card 1 — title', type: 'text' },
+      { name: 'referCard1Body', label: 'Card 1 — body', type: 'text' },
+      { name: 'referCard2Title', label: 'Card 2 — title', type: 'text' },
+      { name: 'referCard2Body', label: 'Card 2 — body', type: 'text' },
+      { name: 'referCard3Title', label: 'Card 3 — title', type: 'text' },
+      { name: 'referCard3Body', label: 'Card 3 — body', type: 'text' },
+      { name: 'referCard4Title', label: 'Card 4 — title', type: 'text' },
+      { name: 'referCard4Body', label: 'Card 4 — body', type: 'text' }
+    ]
+  },
+  {
+    key: 'referralPayouts', label: 'Referral Payouts', icon: 'ti-cash', group: 'Site content', custom: 'referralPayouts',
+    desc: 'End-of-month view: how much each student is owed in confirmed (unpaid) referral bonuses. Transfer the money yourself (bank/UPI), then click "Mark as Paid" to record it and clear their balance.'
+  },
+  {
     key: 'placements', label: 'Placements Wall', icon: 'ti-trophy', group: 'Site content',
     desc: 'The placements wall on the Testimonials page. Add rows one at a time, or bulk-import many at once from Excel below.',
     bulkImport: { itemLabel: 'placement', keepAddButton: true },
@@ -497,4 +532,4 @@ const ADMIN_SECTIONS = [
       { name: 'submittedAt', label: 'Submitted at', type: 'text', col: true }
     ]
   }
-];
+];

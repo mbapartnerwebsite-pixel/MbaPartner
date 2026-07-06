@@ -121,7 +121,8 @@ function selectSection(key) {
   if (key === '__account') return renderAccountSection();
   const section = ADMIN_SECTIONS.find(s => s.key === key);
   if (!section) return;
-  if (section.singleton) renderSettingsSection(section);
+  if (section.custom === 'referralPayouts') renderReferralPayoutsSection(section);
+  else if (section.singleton) renderSettingsSection(section);
   else renderCollectionSection(section);
 }
 
@@ -143,6 +144,69 @@ async function renderSettingsSection(section) {
       toast('Homepage stats updated');
     } catch (e) { toast(e.message, true); }
   };
+}
+
+/* ---------------- REFERRAL PAYOUTS (custom, not a plain collection) ---------------- */
+async function renderReferralPayoutsSection(section) {
+  const main = document.getElementById('main');
+  main.innerHTML = mainHead(section.label, section.desc) +
+    `<div class="panel"><div class="table-wrap" id="payoutsTableWrap"><div class="empty-msg">Loading…</div></div></div>
+     <div class="panel" style="margin-top:20px">
+       <div class="main-title" style="font-size:15px;margin-bottom:10px">Past payouts</div>
+       <div class="table-wrap" id="payoutsHistoryWrap"><div class="empty-msg">Loading…</div></div>
+     </div>`;
+  await loadPayoutsDue();
+  await loadPayoutsHistory();
+}
+
+async function loadPayoutsDue() {
+  const wrap = document.getElementById('payoutsTableWrap');
+  let rows = [];
+  try { rows = await api('/admin/referrals/payouts-due'); } catch (e) { wrap.innerHTML = `<div class="empty-msg">${e.message}</div>`; return; }
+  if (!rows.length) { wrap.innerHTML = '<div class="empty-msg">Nothing owed right now — no confirmed, unpaid referrals.</div>'; return; }
+  const fmt = n => '₹' + Number(n || 0).toLocaleString('en-IN');
+  let html = '<table class="dtab"><thead><tr><th>Student</th><th>Email</th><th>Referral code</th><th># Referrals</th><th>Amount owed</th><th></th></tr></thead><tbody>';
+  rows.forEach(r => {
+    html += `<tr>
+      <td>${r.studentName || '—'}</td>
+      <td>${r.studentEmail}</td>
+      <td>${r.referralCode || '—'}</td>
+      <td>${r.count}</td>
+      <td><b>${fmt(r.total)}</b></td>
+      <td><button class="btn btn-primary" style="width:auto" data-pay="${r.studentEmail}" data-ids='${JSON.stringify(r.referralIds)}'>Mark as Paid</button></td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+  wrap.querySelectorAll('[data-pay]').forEach(btn => {
+    btn.onclick = async () => {
+      if (!confirm(`Confirm you've transferred ${fmt((rows.find(r => r.studentEmail === btn.dataset.pay) || {}).total)} to ${btn.dataset.pay} outside this system, then mark it paid?`)) return;
+      btn.disabled = true;
+      try {
+        await api('/admin/referrals/mark-paid', {
+          method: 'POST',
+          body: JSON.stringify({ studentEmail: btn.dataset.pay, referralIds: JSON.parse(btn.dataset.ids) })
+        });
+        toast('Marked as paid');
+        await loadPayoutsDue();
+        await loadPayoutsHistory();
+      } catch (e) { toast(e.message, true); btn.disabled = false; }
+    };
+  });
+}
+
+async function loadPayoutsHistory() {
+  const wrap = document.getElementById('payoutsHistoryWrap');
+  let rows = [];
+  try { rows = await api('/admin/referrals/payouts'); } catch (e) { wrap.innerHTML = `<div class="empty-msg">${e.message}</div>`; return; }
+  if (!rows.length) { wrap.innerHTML = '<div class="empty-msg">No payouts recorded yet.</div>'; return; }
+  const fmt = n => '₹' + Number(n || 0).toLocaleString('en-IN');
+  let html = '<table class="dtab"><thead><tr><th>Date</th><th>Student</th><th>Amount</th><th>Paid by</th><th>Note</th></tr></thead><tbody>';
+  rows.forEach(r => {
+    html += `<tr><td>${new Date(r.paidAt).toLocaleDateString('en-IN')}</td><td>${r.studentEmail}</td><td>${fmt(r.amount)}</td><td>${r.paidBy || '—'}</td><td>${r.note || '—'}</td></tr>`;
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
 }
 
 /* ---------------- ACCOUNT / CHANGE PASSWORD ---------------- */

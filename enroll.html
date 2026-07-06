@@ -506,11 +506,11 @@ button{cursor:pointer;font-family:inherit}
 <!-- HERO -->
 <header class="enroll-hero">
   <div class="wrap">
-    <div class="enroll-eyebrow"><i class="ti ti-bolt"></i> Enroll & Earn Together</div>
-    <h1 class="enroll-h1">Browse, Pick &amp; <span>Enroll Now</span></h1>
-    <p class="enroll-sub">All MBA Partner programs in one place. Apply referral codes for discounts, or enroll with a friend to get 20% off.</p>
+    <div class="enroll-eyebrow"><i class="ti ti-bolt"></i> <span id="rcEyebrow">Enroll & Earn Together</span></div>
+    <h1 class="enroll-h1" id="rcHeadline">Browse, Pick &amp; <span>Enroll Now</span></h1>
+    <p class="enroll-sub" id="rcSubtext">All MBA Partner programs in one place. Apply referral codes for discounts, or enroll with a friend to get 20% off.</p>
     <button class="enroll-offer-pill" onclick="document.getElementById('referralSec').scrollIntoView({behavior:'smooth'})">
-      <i class="ti ti-gift"></i> Referral System — Earn ₹750 per friend
+      <i class="ti ti-gift"></i> <span id="rcChip3">Referral System — Earn ₹750 per friend</span>
     </button>
   </div>
 </header>
@@ -519,16 +519,16 @@ button{cursor:pointer;font-family:inherit}
 
   <!-- OFFER STRIP -->
   <div class="offer-strip">
-    <div class="offer-chip" style="cursor:pointer" onclick="openEnroll('flagship-bundle', true)"><i class="ti ti-users"></i> Enroll with a friend — both get 20% off</div>
-    <div class="offer-chip"><i class="ti ti-tag"></i> Referral code = 10% off for new students</div>
-    <div class="offer-chip"><i class="ti ti-currency-rupee"></i> Refer & earn ₹750 per successful enrollment</div>
+    <div class="offer-chip" style="cursor:pointer" onclick="openEnroll('flagship-bundle', true)"><i class="ti ti-users"></i> <span id="rcChip1">Enroll with a friend — both get 20% off</span></div>
+    <div class="offer-chip"><i class="ti ti-tag"></i> <span id="rcChip2">Referral code = 10% off for new students</span></div>
+    <div class="offer-chip"><i class="ti ti-currency-rupee"></i> <span id="rcChip3b">Refer & earn ₹750 per successful enrollment</span></div>
   </div>
 
   <!-- REFER BANNER -->
   <div class="refer-banner">
     <div class="refer-banner-text">
-      <h3><i class="ti ti-share" style="color:var(--orange)"></i> Already a student? Share your referral code</h3>
-      <p>Every friend who enrolls using your code earns you <span class="refer-highlight">₹750 cash bonus</span> — and they get <span class="refer-highlight">10% off</span> their first course.</p>
+      <h3><i class="ti ti-share" style="color:var(--orange)"></i> Already a student? <span id="rcBannerHeadline">Share your referral code</span></h3>
+      <p id="rcBannerBody">Every friend who enrolls using your code earns you <span class="refer-highlight">₹750 cash bonus</span> — and they get <span class="refer-highlight">10% off</span> their first course.</p>
     </div>
     <div class="refer-btns">
       <button class="btn-refer" onclick="openReferralDash()"><i class="ti ti-dashboard"></i> My Referral Dashboard</button>
@@ -557,23 +557,23 @@ button{cursor:pointer;font-family:inherit}
   <div class="wrap">
     <div class="ref-dash-inner">
       <div class="ref-dash-left">
-        <h2>Refer &amp; Earn <span style="color:var(--orange)">₹750</span> per Friend</h2>
-        <p>Share your unique referral code with fellow MBA students. When they enroll in any course, you both win — they get 10% off and you earn ₹750 credited to your account.</p>
+        <h2 id="rcSectionHeadline">Refer &amp; Earn <span style="color:var(--orange)">₹750</span> per Friend</h2>
+        <p id="rcSectionBody">Share your unique referral code with fellow MBA students. When they enroll in any course, you both win — they get 10% off and you earn ₹750 credited to your account.</p>
         <div class="ref-feature">
           <div class="ref-feature-ico"><i class="ti ti-gift"></i></div>
-          <div class="ref-feature-text"><h4>₹750 Referral Bonus</h4><p>Credited after your friend's payment is confirmed</p></div>
+          <div class="ref-feature-text"><h4 id="rcCard1Title">₹750 Referral Bonus</h4><p id="rcCard1Body">Credited after your friend's payment is confirmed</p></div>
         </div>
         <div class="ref-feature">
           <div class="ref-feature-ico"><i class="ti ti-tag"></i></div>
-          <div class="ref-feature-text"><h4>10% Off for Your Friend</h4><p>Instant discount applied at checkout on any course</p></div>
+          <div class="ref-feature-text"><h4 id="rcCard2Title">10% Off for Your Friend</h4><p id="rcCard2Body">Instant discount applied at checkout on any course</p></div>
         </div>
         <div class="ref-feature">
           <div class="ref-feature-ico"><i class="ti ti-chart-bar"></i></div>
-          <div class="ref-feature-text"><h4>Track Every Referral</h4><p>See your code, earnings and successful referrals in real time</p></div>
+          <div class="ref-feature-text"><h4 id="rcCard3Title">Track Every Referral</h4><p id="rcCard3Body">See your code, earnings and successful referrals in real time</p></div>
         </div>
         <div class="ref-feature">
           <div class="ref-feature-ico"><i class="ti ti-infinity"></i></div>
-          <div class="ref-feature-text"><h4>No Limit</h4><p>Refer as many friends as you like — earnings stack up</p></div>
+          <div class="ref-feature-text"><h4 id="rcCard4Title">No Limit</h4><p id="rcCard4Body">Refer as many friends as you like — earnings stack up</p></div>
         </div>
       </div>
       <div class="ref-dash-right">
@@ -725,7 +725,7 @@ button{cursor:pointer;font-family:inherit}
           <span id="friendSummarySubtotal">₹0</span>
         </div>
         <div class="friend-summary-row discount">
-          <span>Group Offer Discount (20%)</span>
+          <span id="rcFriendDiscountLabel">Group Offer Discount (20%)</span>
           <span id="friendSummaryDiscount">-₹0</span>
         </div>
         <div class="friend-summary-row total">
@@ -745,7 +745,7 @@ button{cursor:pointer;font-family:inherit}
       
       <!-- Single success content -->
       <div id="successSingleContent">
-        <div class="success-sub">Welcome to MBA Partner! Our team will reach out within 24 hours to onboard you.<br><br>We've generated your unique referral code. Share it and earn ₹750 for every friend who enrolls!</div>
+        <div class="success-sub">Welcome to MBA Partner! Our team will reach out within 24 hours to onboard you.<br><br>We've generated your unique referral code. Share it and earn <span id="rcSuccessBonus">₹750</span> for every friend who enrolls!</div>
         <div class="ref-card">
           <div class="ref-card-label">Your Unique Referral Code</div>
           <div class="ref-code" id="successRefCode">—</div>
@@ -773,8 +773,8 @@ button{cursor:pointer;font-family:inherit}
       <div class="ref-how">
         <div class="ref-how-title"><i class="ti ti-info-circle"></i> How Referrals Work</div>
         <div class="ref-step"><div class="ref-step-n">1</div><span>Share your code with a friend who wants to join MBA Partner</span></div>
-        <div class="ref-step"><div class="ref-step-n">2</div><span>They get <strong>10% off</strong> their enrollment instantly</span></div>
-        <div class="ref-step"><div class="ref-step-n">3</div><span>You earn <strong>₹750</strong> credited to your account per successful enrollment</span></div>
+        <div class="ref-step"><div class="ref-step-n">2</div><span>They get <strong id="rcStep2Pct">10% off</strong> their enrollment instantly</span></div>
+        <div class="ref-step"><div class="ref-step-n">3</div><span>You earn <strong id="rcStep3Bonus">₹750</strong> credited to your account per successful enrollment</span></div>
       </div>
       <button class="pay-btn" style="margin-top:20px;max-width:260px;margin-left:auto;margin-right:auto" onclick="closeEnrollModal()">Continue Browsing</button>
     </div>
@@ -854,6 +854,99 @@ button{cursor:pointer;font-family:inherit}
     const open = freeMenu.classList.toggle('open');
     if (freeIcon) freeIcon.style.transform = open ? 'rotate(180deg)' : '';
   };
+})();
+
+/* ── REFERRAL PROGRAM SETTINGS (admin-editable) ──
+   These four numbers, and the page copy below, used to be hardcoded
+   (₹750 / 10% / 20%) directly in this file. They now come from the
+   'settings' singleton the admin dashboard edits ("Referral Program" and
+   "Enroll & Refer Page Copy" sections) — see REFERRAL-SYSTEM-SPEC.md.
+   The values below are just the safe fallback if the API is unreachable;
+   the page still works fine, exactly like js/site-settings.js does for the
+   homepage stats. */
+let SITE_SETTINGS = {
+  referralBonusAmount: 750, referralDiscountPercent: 10, friendEnrollDiscountPercent: 20, referralConfirmDays: 7,
+  enrollHeroEyebrow: 'Enroll & Earn Together',
+  enrollHeroHeadline: 'Browse, Pick & Enroll Now',
+  enrollHeroSubtext: 'All MBA Partner programs in one place. Apply referral codes for discounts, or enroll with a friend to get {{friendDiscount}} off.',
+  referBannerHeadline: 'Share your referral code',
+  referBannerBody: "Every friend who enrolls using your code earns you {{bonus}} cash bonus — and they get {{referralDiscount}} off their first course.",
+  referSectionHeadline: 'Refer & Earn {{bonus}} per Friend',
+  referSectionBody: 'Share your unique referral code with fellow MBA students. When they enroll in any course, you both win — they get {{referralDiscount}} off and you earn {{bonus}} credited to your account.',
+  referCard1Title: '{{bonus}} Referral Bonus', referCard1Body: "Credited after your friend's payment is confirmed",
+  referCard2Title: '{{referralDiscount}} Off for Your Friend', referCard2Body: 'Instant discount applied at checkout on any course',
+  referCard3Title: 'Track Every Referral', referCard3Body: 'See your code, earnings and successful referrals in real time',
+  referCard4Title: 'No Limit', referCard4Body: 'Refer as many friends as you like — earnings stack up'
+};
+
+function refToken(str) {
+  if (!str) return str;
+  return String(str)
+    .replace(/\{\{bonus\}\}/g, '₹' + Number(SITE_SETTINGS.referralBonusAmount).toLocaleString('en-IN'))
+    .replace(/\{\{referralDiscount\}\}/g, Number(SITE_SETTINGS.referralDiscountPercent) + '%')
+    .replace(/\{\{friendDiscount\}\}/g, Number(SITE_SETTINGS.friendEnrollDiscountPercent) + '%');
+}
+
+// Applies every rc* copy field to the page. Plain-text elements (chips,
+// eyebrow, subtext, card titles/bodies) are always safe to overwrite. The
+// hero headline and refer-banner body contain a hand-styled nested <span>
+// (the orange highlight) — only replaced (as plain text, losing that
+// two-tone styling) if the admin has actually customised that field, so the
+// default look is untouched for everyone who hasn't touched the dashboard.
+function applyReferralCopy() {
+  const s = SITE_SETTINGS;
+  const setText = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.textContent = refToken(val); };
+  setText('rcEyebrow', s.enrollHeroEyebrow);
+  setText('rcSubtext', s.enrollHeroSubtext);
+  setText('rcBannerHeadline', s.referBannerHeadline);
+  setText('rcSectionBody', s.referSectionBody);
+  setText('rcCard1Title', s.referCard1Title); setText('rcCard1Body', s.referCard1Body);
+  setText('rcCard2Title', s.referCard2Title); setText('rcCard2Body', s.referCard2Body);
+  setText('rcCard3Title', s.referCard3Title); setText('rcCard3Body', s.referCard3Body);
+  setText('rcCard4Title', s.referCard4Title); setText('rcCard4Body', s.referCard4Body);
+  setText('rcSuccessBonus', '{{bonus}}');
+  setText('rcStep2Pct', '{{referralDiscount}} off');
+  setText('rcStep3Bonus', '{{bonus}}');
+  setText('rcFriendDiscountLabel', 'Group Offer Discount (' + Number(s.friendEnrollDiscountPercent) + '%)');
+  setText('rcChip1', 'Enroll with a friend — both get ' + Number(s.friendEnrollDiscountPercent) + '% off');
+  setText('rcChip2', 'Referral code = ' + Number(s.referralDiscountPercent) + '% off for new students');
+  setText('rcChip3', 'Referral System — Earn {{bonus}} per friend');
+  setText('rcChip3b', 'Refer & earn {{bonus}} per successful enrollment');
+
+  // Headline / section headline / banner body all have a hand-styled nested
+  // <span> for the orange highlight — only flatten to plain text if the
+  // admin actually customised the field (compares against the shipped
+  // default), so the two-tone look survives for everyone who hasn't.
+  const headlineEl = document.getElementById('rcHeadline');
+  if (headlineEl && s.enrollHeroHeadline && s.enrollHeroHeadline !== 'Browse, Pick & Enroll Now') {
+    headlineEl.textContent = s.enrollHeroHeadline;
+  }
+  const sectionHeadlineEl = document.getElementById('rcSectionHeadline');
+  if (sectionHeadlineEl) {
+    const defaultFilled = refToken('Refer & Earn {{bonus}} per Friend');
+    const filled = refToken(s.referSectionHeadline || '');
+    if (filled && filled !== defaultFilled) sectionHeadlineEl.textContent = filled;
+    else sectionHeadlineEl.innerHTML = 'Refer &amp; Earn <span style="color:var(--orange)">' + ('₹' + Number(s.referralBonusAmount).toLocaleString('en-IN')) + '</span> per Friend';
+  }
+  const bannerBodyEl = document.getElementById('rcBannerBody');
+  if (bannerBodyEl) {
+    const defaultFilled = refToken("Every friend who enrolls using your code earns you {{bonus}} cash bonus — and they get {{referralDiscount}} off their first course.");
+    const filled = refToken(s.referBannerBody || '');
+    if (filled && filled !== defaultFilled) bannerBodyEl.textContent = filled;
+    else bannerBodyEl.innerHTML = 'Every friend who enrolls using your code earns you <span class="refer-highlight">' + refToken('{{bonus}} cash bonus') + '</span> — and they get <span class="refer-highlight">' + refToken('{{referralDiscount}} off') + '</span> their first course.';
+  }
+}
+
+(async function loadSiteSettings() {
+  try {
+    const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
+    const res = await fetch(base + '/api/public/settings');
+    if (res.ok) {
+      const data = await res.json();
+      SITE_SETTINGS = Object.assign({}, SITE_SETTINGS, data);
+    }
+  } catch (e) { /* API unreachable — keep the fallback defaults above, page still works */ }
+  applyReferralCopy();
 })();
 
 /* ── COURSE DATA ── */
@@ -993,7 +1086,7 @@ function updateFriendCalculation() {
   const price1 = c1.price;
   const price2 = c2.price;
   const subtotal = price1 + price2;
-  const discount = Math.round(subtotal * 0.20);
+  const discount = Math.round(subtotal * (Number(SITE_SETTINGS.friendEnrollDiscountPercent) || 20) / 100);
   const total = subtotal - discount;
   
   document.getElementById('friendSummaryCourseLabel1').textContent = c1.title;
@@ -1116,45 +1209,40 @@ async function applyCoupon(){
   const email=(document.getElementById('emEmail').value||'').trim();
   const msg=document.getElementById('emCouponMsg');
 
+  // Only reached if the /api/public/coupons/validate call itself fails
+  // (server unreachable) — referral codes are validated server-side now
+  // (routes/coupons.js checks the Students.referralCode index), so there's
+  // nothing meaningful to check client-side anymore. This is just an
+  // offline safety net for the two admin demo codes, using the live
+  // settings numbers rather than hardcoded ones.
   function applyLocalFallback(){
-    // Check referral codes in localStorage
-    let refs={};
-    try{ refs=JSON.parse(localStorage.getItem('mbaReferrals')||'{}'); }catch(e){}
-
+    const friendPct = Number(SITE_SETTINGS.friendEnrollDiscountPercent) || 20;
+    const refPct = Number(SITE_SETTINGS.referralDiscountPercent) || 10;
     if(code==='GROUP20'){
-      couponDiscount=Math.round(currentCourse.price*0.20);
+      couponDiscount=Math.round(currentCourse.price*friendPct/100);
       appliedCode=code;
       msg.className='coupon-msg ok';
-      msg.textContent='Group offer applied — 20% off! Enroll together to avail.';
+      msg.textContent=`Group offer applied — ${friendPct}% off! Enroll together to avail.`;
       document.getElementById('emTotal').textContent=fmt(currentCourse.price-couponDiscount);
       return;
     }
     if(code==='MBA10'){
-      couponDiscount=Math.round(currentCourse.price*0.10);
+      couponDiscount=Math.round(currentCourse.price*refPct/100);
       appliedCode=code;
       msg.className='coupon-msg ok';
-      msg.textContent='Coupon applied — 10% off!';
-      document.getElementById('emTotal').textContent=fmt(currentCourse.price-couponDiscount);
-      return;
-    }
-    const isRef=Object.values(refs).some(r=>r.code===code);
-    if(isRef){
-      couponDiscount=Math.round(currentCourse.price*0.10);
-      appliedCode=code;
-      msg.className='coupon-msg ok';
-      msg.textContent='Referral code valid — 10% off applied!';
+      msg.textContent=`Coupon applied — ${refPct}% off!`;
       document.getElementById('emTotal').textContent=fmt(currentCourse.price-couponDiscount);
       return;
     }
     couponDiscount=0; appliedCode='';
     msg.className='coupon-msg err';
-    msg.textContent='Invalid code. Try GROUP20 for 20% off with a friend.';
+    msg.textContent="Couldn't reach the server to check that code — please try again in a moment.";
     document.getElementById('emTotal').textContent=fmt(currentCourse.price);
   }
 
-  // Admin-created coupons (including offline-payment, email-locked ones)
-  // live in the backend 'coupons' collection — check there first so those
-  // work here, not just the hardcoded GROUP20/MBA10/referral codes.
+  // Admin-created coupons AND student referral codes (both checked
+  // server-side now — see routes/coupons.js) live in the backend, so check
+  // there first, not just the hardcoded GROUP20/MBA10 offline fallback.
   try{
     const base=(typeof MBA_API_BASE!=='undefined')?MBA_API_BASE:'';
     const res=await fetch(base+'/api/public/coupons/validate',{
@@ -1257,25 +1345,17 @@ async function submitEnrollment(btn){
       }).catch(()=>{});
     } catch(e) {}
 
-    // Generate referral code
-    const refCode=generateRefCode(name,email);
-
-    // Store enrollment + referral in localStorage
-    let data={};
-    try{ data=JSON.parse(localStorage.getItem('mbaReferrals')||'{}'); }catch(e){}
-    if(!data[email]){
-      data[email]={ name,code:refCode,earnings:0,referrals:[],pending:0 };
-    }
-    // If someone used a referral code, credit the referrer
-    if(appliedCode && appliedCode!=='GROUP20' && appliedCode!=='MBA10'){
-      Object.values(data).forEach(r=>{
-        if(r.code===appliedCode){
-          r.referrals.push({friend:name,course:currentCourse.title,status:'confirmed',bonus:750});
-          r.earnings+=750;
-        }
-      });
-    }
-    localStorage.setItem('mbaReferrals', JSON.stringify(data));
+    // The student's referral code is generated + stored server-side the
+    // moment their account is auto-provisioned (see admin-server's
+    // autoProvisionStudent, triggered by the order POST above) — fetch it
+    // back instead of generating one client-side into localStorage, so it
+    // works from any device from here on.
+    let refCode = '';
+    try {
+      const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
+      const rdRes = await fetch(base + '/api/public/referrals/' + encodeURIComponent(email));
+      if (rdRes.ok) { const rd = await rdRes.json(); refCode = rd.referralCode || ''; }
+    } catch (e) { /* the success screen just shows a blank code if this fails — enrollment itself already succeeded */ }
 
     // Show success
     document.getElementById('emBody').style.display='none';
@@ -1339,7 +1419,7 @@ async function submitFriendEnrollment(btn) {
   err.style.display = 'none';
 
   const subtotal = c1.price + c2.price;
-  const discount = Math.round(subtotal * 0.20);
+  const discount = Math.round(subtotal * (Number(SITE_SETTINGS.friendEnrollDiscountPercent) || 20) / 100);
   const finalAmount = subtotal - discount;
   if (btn) btn.disabled = true;
 
@@ -1362,11 +1442,15 @@ async function submitFriendEnrollment(btn) {
     });
     await startRazorpayCheckout(orderData, checkoutPayload);
 
-    // Save to the admin dashboard ("Enroll Page Signups") — fire-and-forget,
-    // doesn't block or change any of the referral-code logic below.
+    // Save to the admin dashboard ("Enroll Page Signups") — this is also
+    // what provisions Member 2's student login + referral code (Member 1's
+    // login comes from the order above; see resource.js's
+    // autoProvisionFromSubmission 'enrollmentRequests' branch), so it's
+    // awaited now rather than fire-and-forget: the referral-code fetch
+    // right below needs Member 2's account to already exist.
     try {
       const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
-      fetch(base + '/api/public/enrollmentRequests', {
+      await fetch(base + '/api/public/enrollmentRequests', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           Type: 'group', Course: currentCourse ? currentCourse.title : '', CourseId: currentCourse ? currentCourse.id : '',
@@ -1374,24 +1458,25 @@ async function submitFriendEnrollment(btn) {
           Name2: name2, Email2: email2, Phone2: phone2, College2: college2,
           CouponUsed: appliedCode || ''
         })
-      }).catch(()=>{});
+      });
     } catch(e) {}
 
-    // Generate codes
-    const code1 = generateRefCode(name1, email1);
-    const code2 = generateRefCode(name2, email2);
-    
+    // Both members' referral codes are generated + stored server-side the
+    // moment their accounts are auto-provisioned by the order above — fetch
+    // them back instead of generating locally into localStorage.
+    const base2 = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
+    let code1 = '', code2 = '';
+    try {
+      const [r1, r2] = await Promise.all([
+        fetch(base2 + '/api/public/referrals/' + encodeURIComponent(email1)),
+        fetch(base2 + '/api/public/referrals/' + encodeURIComponent(email2))
+      ]);
+      if (r1.ok) code1 = (await r1.json()).referralCode || '';
+      if (r2.ok) code2 = (await r2.json()).referralCode || '';
+    } catch (e) { /* success screen just shows blank codes if this fails — enrollment itself already succeeded */ }
+
     window._friendRefCode1 = code1;
     window._friendRefCode2 = code2;
-
-    // Store in localStorage
-    let data = {};
-    try { data = JSON.parse(localStorage.getItem('mbaReferrals') || '{}'); } catch(e){}
-    
-    data[email1] = { name: name1, code: code1, earnings: 0, referrals: [], pending: 0 };
-    data[email2] = { name: name2, code: code2, earnings: 0, referrals: [], pending: 0 };
-    
-    localStorage.setItem('mbaReferrals', JSON.stringify(data));
 
     // Hide forms
     document.getElementById('emBody').style.display = 'none';
@@ -1424,12 +1509,8 @@ function copyFriendCode(num) {
 }
 
 
-function generateRefCode(name,email){
-  const n=name.toUpperCase().replace(/[^A-Z]/g,'').substring(0,3)||'MBA';
-  const h=email.split('').reduce((a,c)=>a+c.charCodeAt(0),0)%9000+1000;
-  return n+h;
-}
 function formatRefCode(code){
+  code = code || '';
   return `<span>${code.substring(0,3)}</span>${code.substring(3)}`;
 }
 
@@ -1442,23 +1523,38 @@ function copyDashCode(){
   navigator.clipboard.writeText(code).then(()=>showToast('Code copied!')).catch(()=>{});
 }
 
-/* ── REFERRAL DASHBOARD (inline section) ── */
-function loadRefDash(){
+/* ── REFERRAL DASHBOARD (inline section) ──
+   Both this and the modal version below now read from the server
+   (GET /api/public/referrals/:email — routes/referrals.js), keyed by the
+   student's own email, instead of localStorage — so "My Referral
+   Dashboard" works from any device/browser, not just the one you enrolled
+   from. See REFERRAL-SYSTEM-SPEC.md. */
+async function fetchReferralDash(email) {
+  const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
+  const res = await fetch(base + '/api/public/referrals/' + encodeURIComponent(email));
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || 'No enrollment found for this email. Please enroll first.');
+  }
+  return res.json();
+}
+
+async function loadRefDash(){
   const email=(document.getElementById('refEmailInput').value||'').trim();
   const res=document.getElementById('refResult');
   if(!email){ res.className='ref-result err'; res.textContent='Please enter your email.'; return; }
-  let data={};
-  try{ data=JSON.parse(localStorage.getItem('mbaReferrals')||'{}'); }catch(e){}
-  const r=data[email];
-  if(!r){ res.className='ref-result err'; res.textContent='No enrollment found for this email. Please enroll first.'; document.getElementById('refDashContent').style.display='none'; return; }
-  res.className='ref-result ok'; res.textContent='Dashboard loaded for '+r.name;
-  document.getElementById('dashRefCode').innerHTML=formatRefCode(r.code);
-  document.getElementById('dashTotalRefs').textContent=r.referrals.length;
-  document.getElementById('dashEarnings').textContent='₹'+r.earnings;
+  res.className='ref-result'; res.textContent='Loading…';
+  let r;
+  try { r = await fetchReferralDash(email); }
+  catch (e) { res.className='ref-result err'; res.textContent=e.message; document.getElementById('refDashContent').style.display='none'; return; }
+  res.className='ref-result ok'; res.textContent='Dashboard loaded';
+  document.getElementById('dashRefCode').innerHTML=formatRefCode(r.referralCode);
+  document.getElementById('dashTotalRefs').textContent=r.totalReferrals;
+  document.getElementById('dashEarnings').textContent='₹'+r.totalEarned;
   document.getElementById('dashPending').textContent=r.pending||0;
-  document.getElementById('refHistoryBody').innerHTML=(r.referrals.length?r.referrals.map(ref=>`<tr><td>${ref.friend}</td><td>${ref.course}</td><td><span class="ref-badge">${ref.status}</span></td><td style="color:#34d399;font-weight:700">₹${ref.bonus}</td></tr>`).join(''):'<tr><td colspan="4" style="text-align:center;opacity:.5;padding:20px">No referrals yet — share your code!</td></tr>');
+  document.getElementById('refHistoryBody').innerHTML=(r.history.length?r.history.map(ref=>`<tr><td>${ref.friend}</td><td>${ref.course}</td><td><span class="ref-badge">${ref.status}</span></td><td style="color:#34d399;font-weight:700">₹${ref.bonus}</td></tr>`).join(''):'<tr><td colspan="4" style="text-align:center;opacity:.5;padding:20px">No referrals yet — share your code!</td></tr>');
   document.getElementById('refDashContent').style.display='block';
-  window._lastRefCode=r.code;
+  window._lastRefCode=r.referralCode;
 }
 
 /* ── REFERRAL DASHBOARD MODAL ── */
@@ -1466,22 +1562,22 @@ function openReferralDash(){
   document.getElementById('refDashModal').classList.add('open');
   document.body.style.overflow='hidden';
 }
-function loadDashModal(){
+async function loadDashModal(){
   const email=(document.getElementById('dashEmailInput').value||'').trim();
   const res=document.getElementById('dashResult');
   if(!email){ res.className='ref-result err'; res.textContent='Please enter your email.'; return; }
-  let data={};
-  try{ data=JSON.parse(localStorage.getItem('mbaReferrals')||'{}'); }catch(e){}
-  const r=data[email];
-  if(!r){ res.className='ref-result err'; res.textContent='No enrollment found. Please enroll a course first.'; document.getElementById('dashModalContent').style.display='none'; return; }
-  res.className='ref-result ok'; res.textContent='Welcome back, '+r.name+'!';
-  document.getElementById('dashModalCode').innerHTML=formatRefCode(r.code);
-  document.getElementById('dashModalRefs').textContent=r.referrals.length;
-  document.getElementById('dashModalEarnings').textContent='₹'+r.earnings;
+  res.className='ref-result'; res.textContent='Loading…';
+  let r;
+  try { r = await fetchReferralDash(email); }
+  catch (e) { res.className='ref-result err'; res.textContent=e.message; document.getElementById('dashModalContent').style.display='none'; return; }
+  res.className='ref-result ok'; res.textContent='Welcome back!';
+  document.getElementById('dashModalCode').innerHTML=formatRefCode(r.referralCode);
+  document.getElementById('dashModalRefs').textContent=r.totalReferrals;
+  document.getElementById('dashModalEarnings').textContent='₹'+r.totalEarned;
   document.getElementById('dashModalPending').textContent=r.pending||0;
-  document.getElementById('dashModalBody').innerHTML=(r.referrals.length?r.referrals.map(ref=>`<tr><td>${ref.friend}</td><td>${ref.course}</td><td style="color:var(--green);font-weight:700">₹${ref.bonus}</td></tr>`).join(''):'<tr><td colspan="3" style="text-align:center;opacity:.5;padding:20px">No referrals yet</td></tr>');
+  document.getElementById('dashModalBody').innerHTML=(r.history.length?r.history.map(ref=>`<tr><td>${ref.friend}</td><td>${ref.course}</td><td style="color:var(--green);font-weight:700">₹${ref.bonus}</td></tr>`).join(''):'<tr><td colspan="3" style="text-align:center;opacity:.5;padding:20px">No referrals yet</td></tr>');
   document.getElementById('dashModalContent').style.display='block';
-  window._lastDashCode=r.code;
+  window._lastDashCode=r.referralCode;
 }
 document.getElementById('refDashModal').addEventListener('click',e=>{if(e.target===document.getElementById('refDashModal')){ document.getElementById('refDashModal').classList.remove('open'); document.body.style.overflow=''; }});
 
@@ -1500,4 +1596,10 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeEnrollModal(
 // used by openEnroll()'s call chain (currentCourse, LIVE_DOMAINS,
 // COURSE_DOMAIN_REQUIREMENT, renderDomainPicker, etc.) has already been
 // declared — putting this earlier caused "Cannot access '<name>' before
-// initialization" errors (temporal dead zon
+// initialization" errors (temporal dead zone) and the modal silently never
+// opens, even though the URL correctly has ?course=... on it.
+const _urlCourseId = new URLSearchParams(location.search).get('course');
+if (_urlCourseId) openEnroll(_urlCourseId);
+</script>
+</body>
+</html>
