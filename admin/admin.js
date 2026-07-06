@@ -683,19 +683,25 @@ async function loadAndRenderTable(section) {
     return v == null ? '' : String(v);
   };
 
-  // Group related rows together instead of showing them in raw insertion
-  // order (e.g. Study Materials otherwise scatters a course's 6 domain rows
-  // randomly among 60+ others) — sort by each visible column in order, so
-  // rows sharing the first column's value cluster together, sub-sorted by
-  // the next column, and so on.
-  const sortedRows = rows.slice().sort((a, b) => {
-    for (const f of useCols) {
-      const av = displayValue(a, f).toLowerCase(), bv = displayValue(b, f).toLowerCase();
-      if (av < bv) return -1;
-      if (av > bv) return 1;
-    }
-    return 0;
-  });
+  // Checkout Orders: always show newest-first by submission time — this is
+  // the table the admin actually watches to track incoming purchases, so
+  // alphabetical grouping (by Name/Email) would bury today's new orders
+  // among old ones instead of surfacing them at the top.
+  const sortedRows = section.key === 'orders'
+    ? rows.slice().sort((a, b) => new Date(b.submittedAt || 0) - new Date(a.submittedAt || 0))
+    : rows.slice().sort((a, b) => {
+        // Group related rows together instead of showing them in raw
+        // insertion order (e.g. Study Materials otherwise scatters a
+        // course's 6 domain rows randomly among 60+ others) — sort by each
+        // visible column in order, so rows sharing the first column's value
+        // cluster together, sub-sorted by the next column, and so on.
+        for (const f of useCols) {
+          const av = displayValue(a, f).toLowerCase(), bv = displayValue(b, f).toLowerCase();
+          if (av < bv) return -1;
+          if (av > bv) return 1;
+        }
+        return 0;
+      });
 
   function renderRows(list) {
     let html = '<table class="dtab"><thead><tr>';
