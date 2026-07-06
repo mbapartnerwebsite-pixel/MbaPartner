@@ -198,7 +198,12 @@ async function loadMyAttempts(){
 /* A mock/PYQ with a Deadline in the past is treated as no longer available. */
 function isCatExpired(entry){
   if(!entry || !entry.Deadline) return false;
-  const d=new Date(entry.Deadline+'T23:59:59');
+  // Deadline can be a plain date (old rows, or the date-only <input type=date>
+  // still used elsewhere) or a full date+time (new datetime-local field) —
+  // a date-only value has no 'T' in it, so treat it as end-of-day; a
+  // date+time value already carries its own time, use it as-is.
+  const raw = String(entry.Deadline).includes('T') ? entry.Deadline : entry.Deadline + 'T23:59:59';
+  const d = new Date(raw);
   return !isNaN(d.getTime()) && d.getTime() < Date.now();
 }
 
@@ -284,12 +289,11 @@ function renderPyq(d){
   const filtered=pyqFilter==='all'?byExam:byExam.filter(p=>p.Year===pyqFilter);
   el.innerHTML=filtered.map(p=>{
     const expired=isCatExpired(p);
-    // PdfUrl (admin upload) also counts as an openable paper, alongside the legacy Link field.
-    const pdf=p.PdfUrl&&p.PdfUrl!=='';
-    const has=(p.Link&&p.Link!=='#'&&p.Link!=='')||pdf;
+    // Legacy Link field (some old rows may still have a direct paper link).
+    const has=p.Link&&p.Link!=='#'&&p.Link!=='';
     const attempted=!!p.MockID&&!!MY_MOCK_ATTEMPTS[p.MockID];
     const playable=!!p.MockID&&!expired&&!attempted;
-    const openUrl=pdf?p.PdfUrl:p.Link;
+    const openUrl=p.Link;
     let action='';
     if(attempted) action=`onclick="analyzeTest('${p.MockID}')"`;
     else if(playable) action=`onclick="startMock('${p.MockID}')"`;

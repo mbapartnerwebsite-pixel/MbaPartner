@@ -51,6 +51,41 @@ const KB = {
   }
 };
 
+/* ── LIVE COURSE DATA (admin dashboard) ──
+   The 'courses' and 'pricing' answers above are a hardcoded fallback so the
+   bot always has something to say even if the API is unreachable. On load,
+   pull the real course list from the admin-server API and rebuild those two
+   answers from it, so prices/programs the admin edits actually show up here
+   instead of these frozen numbers. */
+function fmtINR(n) { return '₹' + Number(n).toLocaleString('en-IN'); }
+
+async function refreshCourseKB() {
+  try {
+    const base = (typeof MBA_API_BASE !== 'undefined') ? MBA_API_BASE : '';
+    const res = await fetch(base + '/api/public/courses');
+    if (!res.ok) return;
+    const rows = await res.json();
+    if (!Array.isArray(rows) || !rows.length) return;
+
+    const mba = rows
+      .filter(r => (r.Track || 'mba') === 'mba' && r.title && r.price)
+      .sort((a, b) => a.price - b.price);
+    if (!mba.length) return;
+
+    const badgeIcon = b => b ? (/best/i.test(b) ? '🏆 ' : /popular|bestseller/i.test(b) ? '🎯 ' : '') : '';
+
+    const coursesLines = mba.map(c =>
+      `${badgeIcon(c.badge)}<b>${c.title}</b> — ${fmtINR(c.price)}${c.badge ? ' (' + c.badge + ')' : ''}${c.sub ? '\n' + c.sub : ''}`
+    ).join('\n\n');
+    KB.courses.answer = `Here are our current programs:\n\n${coursesLines}\n\nWant details on any of these? Check the <a href="courses.html">Courses page</a> or ask me directly.`;
+
+    const priceLines = mba.map(c => `• ${c.title}: <b>${fmtINR(c.price)}</b>`).join('\n');
+    KB.pricing.answer = `Our current program pricing:\n\n${priceLines}\n\nAll one-time payments, lifetime access. Call us at +91 70427 32092 for any queries.`;
+  } catch (e) {
+    // Network hiccup — keep the built-in fallback text above, no error shown to the user.
+  }
+}
+
 /* ── QUICK REPLIES ───────────────────────────────────────── */
 const QUICK_REPLIES = [
   { label: '🎓 About MBA Partner', key: 'about'    },
@@ -268,6 +303,7 @@ async function submitContact() {
 
 /* ── INIT ────────────────────────────────────────────────── */
 window.addEventListener('load', () => {
+  refreshCourseKB();
   showTyping();
   setTimeout(() => {
     removeTyping();

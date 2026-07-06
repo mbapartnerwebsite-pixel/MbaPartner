@@ -258,6 +258,8 @@ function bulkNewFieldHtml(f) {
     input = `<select ${common}><option value="">Select…</option>${(f.options || []).map(o => `<option value="${o}">${o}</option>`).join('')}</select>`;
   } else if (f.type === 'date') {
     input = `<input type="date" ${common}/>`;
+  } else if (f.type === 'datetime-local') {
+    input = `<input type="datetime-local" ${common}/>`;
   } else if (f.type === 'number') {
     input = `<input type="number" ${common}/>`;
   } else {
@@ -329,9 +331,52 @@ async function renderBulkImportPanel(section) {
         <button type="button" class="btn btn-primary" style="width:auto" id="bulkUploadBtn"><i class="ti ti-upload"></i> Upload &amp; add ${itemLabelPlural}</button>
       </div>
       <div id="bulkResultMsg" style="font-size:13px;margin-top:12px"></div>
-    </div>`;
+    </div>
+
+    ${needsPaper ? `
+    <div style="background:#fff6f5;border:1.5px solid #f3c9c3;border-radius:12px;padding:18px 20px;margin-bottom:16px">
+      <div style="font-weight:700;font-size:14px;margin-bottom:6px;color:#a5271b">Paper finished? Remove all its ${itemLabelPlural} at once</div>
+      <div style="font-size:12.5px;color:var(--ink2,#5a6070);margin-bottom:12px;line-height:1.6">
+        Pick a paper below and every ${itemLabel} tagged with its Mock ID gets deleted in one go — instead of removing them
+        one row at a time in the table below. This only deletes the ${itemLabelPlural} — the paper itself
+        (in "${cfg.mockCollection === 'catMocks' ? 'CAT Mock Tests' : 'PYQ Papers'}") stays untouched, so you can reuse
+        the same paper for a fresh set of questions later, or delete the paper separately if you're done with it entirely.
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+        <select id="bulkDeleteMockSelect" style="flex:1;min-width:220px;max-width:360px;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:13.5px">
+          <option value="">Which paper's ${itemLabelPlural} do you want to remove?</option>
+          ${optionsHtml}
+        </select>
+        <button type="button" class="btn btn-ghost" style="width:auto;color:#a5271b;border-color:#f3c9c3" id="bulkDeleteAllBtn"><i class="ti ti-trash"></i> Delete all ${itemLabelPlural} for this paper</button>
+      </div>
+      <div id="bulkDeleteMsg" style="font-size:13px;margin-top:10px"></div>
+    </div>` : ''}`;
 
   document.getElementById('bulkTemplateBtn').onclick = () => downloadBulkTemplate(section);
+
+  if (needsPaper) {
+    const delBtn = document.getElementById('bulkDeleteAllBtn');
+    const delSelect = document.getElementById('bulkDeleteMockSelect');
+    const delMsg = document.getElementById('bulkDeleteMsg');
+    delBtn.onclick = async () => {
+      const mockId = delSelect.value;
+      delMsg.innerHTML = '';
+      if (!mockId) { delMsg.innerHTML = '<span style="color:#c0392b">Pick a paper first.</span>'; return; }
+      const label = delSelect.options[delSelect.selectedIndex].textContent;
+      if (!confirm(`Delete ALL ${itemLabelPlural} for "${label}"? This can't be undone.`)) return;
+      delBtn.disabled = true;
+      try {
+        const res = await api('/admin/' + section.key + '/by/MockID/' + encodeURIComponent(mockId), { method: 'DELETE' });
+        delMsg.innerHTML = `<span style="color:var(--green,#1a7f4b);font-weight:700">${res.removed} ${itemLabel}${res.removed === 1 ? '' : 's'} deleted.</span>`;
+        toast(`${res.removed} ${itemLabel}${res.removed === 1 ? '' : 's'} deleted`);
+        await loadAndRenderTable(section);
+      } catch (e) {
+        delMsg.innerHTML = `<span style="color:#c0392b">${e.message}</span>`;
+      } finally {
+        delBtn.disabled = false;
+      }
+    };
+  }
 
   let creatingNew = false;
   const newPaperToggle = document.getElementById('bulkNewPaperToggle');
@@ -594,6 +639,9 @@ function fieldHtml(f, value, refOptions) {
   }
   if (f.type === 'date') {
     return `<div class="field"><label>${f.label}</label><input id="${id}" type="date" value="${value ? escapeHtml(value) : ''}"/></div>`;
+  }
+  if (f.type === 'datetime-local') {
+    return `<div class="field"><label>${f.label}</label><input id="${id}" type="datetime-local" value="${value ? escapeHtml(value) : ''}"/></div>`;
   }
   const type = f.type === 'number' ? 'number' : 'text';
   const step = f.step ? `step="${f.step}"` : '';

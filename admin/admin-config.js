@@ -356,7 +356,7 @@ const ADMIN_SECTIONS = [
       { name: 'Status', label: 'Status', type: 'select', options: ['live', 'coming'], col: true },
       { name: 'Attempts', label: 'Attempts count (shown as stat)', type: 'number' },
       { name: 'Note', label: 'Note (e.g. "Coming soon")', type: 'text' },
-      { name: 'Deadline', label: 'Deadline (blank = always available)', type: 'date' }
+      { name: 'Deadline', label: 'Deadline (blank = always available)', type: 'datetime-local' }
     ]
   },
   {
@@ -371,7 +371,7 @@ const ADMIN_SECTIONS = [
         { name: 'Title', label: 'Title', type: 'text', required: true },
         { name: 'Section', label: 'Section (e.g. VARC, QA, LRDI)', type: 'text' },
         { name: 'Duration', label: 'Duration (minutes)', type: 'number', required: true },
-        { name: 'Deadline', label: 'Deadline (blank = always available)', type: 'date' }
+        { name: 'Deadline', label: 'Deadline (blank = always available)', type: 'datetime-local' }
       ]
     },
     fields: [
@@ -388,7 +388,7 @@ const ADMIN_SECTIONS = [
   },
   {
     key: 'catPyq', label: 'PYQ Papers', icon: 'ti-file-text', group: 'CAT / OMETs Portal',
-    desc: 'Past Year Question papers. Upload the official PDF here (students can open/download it), and optionally set a Mock ID to link it to a full interactive question set in "PYQ Questions" below. Set a deadline to stop showing it after a date.',
+    desc: 'Past Year Question papers. Set a Mock ID to link it to a full interactive question set (built via Excel bulk import in "PYQ Questions" below). Set a deadline to stop showing it after a date.',
     fields: [
       { name: 'Exam', label: 'Exam', type: 'select', options: ['CAT', 'XAT', 'SNAP', 'NMAT', 'MAH-CET', 'IIFT', 'CMAT', 'TISSNET'], required: true, col: true },
       { name: 'Year', label: 'Year', type: 'text', required: true, col: true },
@@ -396,8 +396,7 @@ const ADMIN_SECTIONS = [
       { name: 'Title', label: 'Title', type: 'text', required: true, col: true },
       { name: 'Meta', label: 'Small description (e.g. "24 Qs · Full solutions")', type: 'text' },
       { name: 'MockID', label: 'Linked Mock ID (optional — for interactive question set)', type: 'text' },
-      { name: 'PdfUrl', label: 'PYQ Paper PDF', type: 'file' },
-      { name: 'Deadline', label: 'Deadline (blank = always available)', type: 'date' }
+      { name: 'Deadline', label: 'Deadline (blank = always available)', type: 'datetime-local' }
     ]
   },
   {
@@ -414,7 +413,7 @@ const ADMIN_SECTIONS = [
         { name: 'Title', label: 'Title', type: 'text', required: true },
         { name: 'Meta', label: 'Small description (e.g. "24 Qs · Full solutions")', type: 'text' },
         { name: 'MockID', label: 'Mock ID (unique, no spaces — links the paper to its questions, e.g. cat-2023-varc)', type: 'text', required: true },
-        { name: 'Deadline', label: 'Deadline (blank = always available)', type: 'date' }
+        { name: 'Deadline', label: 'Deadline (blank = always available)', type: 'datetime-local' }
       ]
     },
     fields: [
@@ -464,46 +463,4 @@ const ADMIN_SECTIONS = [
       { name: 'Wrong', label: 'Wrong', type: 'number' },
       { name: 'Skipped', label: 'Skipped', type: 'number' },
       { name: 'Percentile', label: 'Percentile', type: 'text' },
-      { name: 'submittedAt', label: 'Submitted at', type: 'text', col: true }
-    ]
-  },
-  {
-    key: 'catGdpi', label: 'CAT GDPI', icon: 'ti-message-star', group: 'CAT / OMETs Portal',
-    desc: 'Mock PI / GD sessions shown on the CAT/OMETs portal.',
-    fields: [
-      { name: 'Type', label: 'Type', type: 'select', options: ['PI', 'GD'], col: true },
-      { name: 'Title', label: 'Title', type: 'text', required: true, col: true },
-      { name: 'Meta', label: 'Small description', type: 'text' },
-      { name: 'Link', label: 'Link', type: 'text' }
-    ]
-  },
-  {
-    key: 'catDomainQA', label: 'CAT Domain Q&A', icon: 'ti-bulb', group: 'CAT / OMETs Portal',
-    desc: 'Domain-wise interview question banks (Finance, Marketing, Consulting, etc). Add rows one at a time, or bulk-import many at once from Excel below.',
-    bulkImport: { itemLabel: 'entry', keepAddButton: true },
-    fields: [
-      { name: 'Domain', label: 'Domain', type: 'text', required: true, col: true },
-      { name: 'Title', label: 'Title', type: 'text', required: true, col: true },
-      { name: 'Meta', label: 'Small description', type: 'text' },
-      { name: 'Link', label: 'Link', type: 'text' }
-    ]
-  },
-  {
-    key: 'catMentors', label: 'CAT Mentors', icon: 'ti-users', group: 'CAT / OMETs Portal',
-    desc: 'Mentors shown specifically on the CAT/OMETs prep portal.',
-    fields: [
-      { name: 'Name', label: 'Name', type: 'text', required: true, col: true },
-      { name: 'School', label: 'B-school', type: 'text', col: true },
-      { name: 'Converted', label: 'Result (e.g. "CAT 99.8%ile")', type: 'text', col: true },
-      { name: 'Domain', label: 'Domain', type: 'text' },
-      { name: 'LinkedIn', label: 'LinkedIn URL', type: 'text' }
-    ]
-  }
-  // NOTE: the old "CAT Pricing Plans" section (Free Material / Mock Test
-  // Series / GDPI Flagship) has been removed — those 3 plans now live as
-  // ordinary rows in "Courses & Pricing" above (Track: cat, ids:
-  // free-material / mock-test-series / gdpi-flagship). Edit their
-  // price/copy there; the CAT/OMETs portal pricing cards and cat-enroll.html
-  // both read from that same 'courses' collection, so there's only one
-  // place to touch a CAT price now instead of two.
-];
+      { name: 'submittedAt', label: 'Submitted at', type: 'text', col: tru

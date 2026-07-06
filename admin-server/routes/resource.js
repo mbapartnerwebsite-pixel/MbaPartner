@@ -173,6 +173,19 @@ function makeAdminRouter(name) {
     res.json(rows[idx]);
   });
 
+  // Bulk delete every row in this collection matching one field's value —
+  // e.g. clear out every question tagged with a given MockID once a PYQ
+  // paper/mock test is retired, instead of deleting 60-70 rows one by one.
+  // Placed before '/:id' so it isn't ever mistaken for a single-record id.
+  router.delete('/by/:field/:value', (req, res) => {
+    const { field, value } = req.params;
+    const rows = db.getCollection(name);
+    const next = rows.filter(r => String(r[field]) !== String(value));
+    const removed = rows.length - next.length;
+    db.setCollection(name, next);
+    res.json({ ok: true, removed });
+  });
+
   router.delete('/:id', (req, res) => {
     const rows = db.getCollection(name);
     const next = rows.filter(r => r._id !== req.params.id);

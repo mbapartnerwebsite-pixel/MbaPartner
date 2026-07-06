@@ -497,7 +497,9 @@ const CAT_MATERIALS = [
   { Section: 'LRDI', Title: 'LRDI Set Bank', Meta: '200+ practice sets', Type: 'pdf', Link: '#' }
 ];
 
-// Deadline: 'yyyy-mm-dd' or blank = no deadline (always available).
+// Deadline: 'yyyy-mm-ddThh:mm' (date + time, set from the admin dashboard),
+// or the older plain 'yyyy-mm-dd' on existing rows, or blank = no deadline
+// (always available). isCatExpired() in js/cat-portal.js handles both formats.
 const CAT_MOCKS = [
   { MockID: 'varc-1', Exam: 'CAT', Title: 'VARC Mock 1', Section: 'VARC', Duration: 40, Status: 'live', Attempts: 1240, Note: '', Deadline: '' },
   { MockID: 'qa-1', Exam: 'CAT', Title: 'QA Mock 1', Section: 'QA', Duration: 40, Status: 'coming', Attempts: 0, Note: 'Coming soon', Deadline: '' },
@@ -521,9 +523,9 @@ const CAT_QUESTIONS = [
 ];
 
 const CAT_PYQ = [
-  { Exam: 'CAT', Year: '2024', Section: 'VARC', Title: 'CAT 2024 VARC — Slot 1', Meta: '24 Qs · Full solutions', MockID: 'pyq-cat24-varc-s1', PdfUrl: '', Deadline: '' },
-  { Exam: 'CAT', Year: '2023', Section: 'QA', Title: 'CAT 2023 Quant — Slot 1', Meta: '22 Qs · Full solutions', MockID: 'pyq-cat23-qa-s1', PdfUrl: '', Deadline: '' },
-  { Exam: 'XAT', Year: '2024', Section: 'VARC', Title: 'XAT 2024 Verbal Ability', Meta: '26 Qs · PDF paper', MockID: '', PdfUrl: '', Deadline: '' }
+  { Exam: 'CAT', Year: '2024', Section: 'VARC', Title: 'CAT 2024 VARC — Slot 1', Meta: '24 Qs · Full solutions', MockID: 'pyq-cat24-varc-s1', Deadline: '' },
+  { Exam: 'CAT', Year: '2023', Section: 'QA', Title: 'CAT 2023 Quant — Slot 1', Meta: '22 Qs · Full solutions', MockID: 'pyq-cat23-qa-s1', Deadline: '' },
+  { Exam: 'XAT', Year: '2024', Section: 'VARC', Title: 'XAT 2024 Verbal Ability', Meta: '26 Qs · PDF paper', MockID: '', Deadline: '' }
 ];
 
 // Same shape as CAT_QUESTIONS, but keyed by the PYQ's MockID.
