@@ -119,7 +119,17 @@ function autoProvisionFromSubmission(name, record) {
       ids.forEach((id, i) => {
         autoProvisionProgram(id, titles[i]);
         autoProvisionEnrollment(record.Email, id, domainMap[id] || '');
+        // courses.html's "Enroll with a friend" group offer (see js/search.js)
+        // charges ONE payment for TWO seats in the same cart — Email2 is the
+        // friend who's enrolling alongside Email, in these same courses, not
+        // just someone who unlocked a discount for the person paying.
+        if (record.Type === 'group' && record.Email2) {
+          autoProvisionEnrollment(record.Email2, id, domainMap[id] || '');
+        }
       });
+      if (record.Type === 'group' && record.Email2) {
+        autoProvisionStudent(record.Email2, record.Name2);
+      }
       // If this order's Coupon field is actually a student's referral code
       // (not an admin coupon like GROUP20/MBA10), credit the referrer —
       // see routes/referrals.js. Never blocks the order itself if it fails.

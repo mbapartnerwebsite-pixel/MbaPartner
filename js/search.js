@@ -853,7 +853,17 @@ function renderRelated(c) {
 function renderCheckout() {
   const body = document.getElementById('checkoutBody');
   if (!cart.length) { body.innerHTML = `<div class="co-empty"><i class="ti ti-shopping-cart-off"></i><p>Your cart is empty.</p><button class="buy-enroll" style="max-width:220px;margin:0 auto" onclick="location.hash='#/'">Browse courses</button></div>`; return; }
-  const total = cart.reduce((s, c) => s + c.price, 0), mrpTotal = cart.reduce((s, c) => s + (c.mrp || c.price), 0), saved = mrpTotal - total;
+  // "Enroll with a friend" means TWO people are joining — your friend gets
+  // their own seat in the exact same cart, not a discount tacked onto your
+  // single seat. So once the group offer is applied, every money figure
+  // below (subtotal, savings, the 20% itself) has to be computed on TWO
+  // seats' worth of the cart, not one — otherwise the friend enrolls for
+  // free and nobody's ever actually charged for their seat.
+  const isGroup = !!(appliedCoupon && appliedCoupon.code === 'GROUP20' && appliedCoupon.group);
+  const seats = isGroup ? 2 : 1;
+  const total = cart.reduce((s, c) => s + c.price, 0) * seats;
+  const mrpTotal = cart.reduce((s, c) => s + (c.mrp || c.price), 0) * seats;
+  const saved = mrpTotal - total;
   const couponDiscount = appliedCoupon ? Math.round(total * appliedCoupon.pct / 100) : 0;
   const grandTotal = total - couponDiscount;
   body.innerHTML = `<div class="co-title">Checkout</div><div class="co-sub">${cart.length} item${cart.length > 1 ? 's' : ''} in your cart</div>
@@ -865,13 +875,13 @@ function renderCheckout() {
       <div class="pay-note">Payments are processed securely via Razorpay.</div>
     </div>
     <div class="co-panel group-panel"><h3><i class="ti ti-users"></i> Enroll with a friend — 20% off</h3>
-      <p class="group-note">When 2 students join together, you <b>both</b> get 20% off. Add your friend's details to apply.</p>
-      <div class="field-row"><div class="field"><label>Friend's name</label><input id="grpName" placeholder="Friend's name"/></div><div class="field"><label>Friend's email</label><input id="grpEmail" type="email" placeholder="friend@email.com"/></div></div>
-      <button class="group-apply-btn ${appliedCoupon && appliedCoupon.code === 'GROUP20' ? 'applied' : ''}" id="grpApply" type="button">${appliedCoupon && appliedCoupon.code === 'GROUP20' ? '✓ Group offer applied — 20% off' : 'Apply group offer — 20% off'}</button>
+      <p class="group-note">When 2 students join together, you <b>both</b> get 20% off — your friend gets their own seat in this same cart, charged alongside yours in one payment. Add your friend's details to apply.</p>
+      <div class="field-row"><div class="field"><label>Friend's name</label><input id="grpName" placeholder="Friend's name" value="${isGroup ? appliedCoupon.group.name.replace(/"/g, '&quot;') : ''}"/></div><div class="field"><label>Friend's email</label><input id="grpEmail" type="email" placeholder="friend@email.com" value="${isGroup ? appliedCoupon.group.email.replace(/"/g, '&quot;') : ''}"/></div></div>
+      <button class="group-apply-btn ${isGroup ? 'applied' : ''}" id="grpApply" type="button">${isGroup ? '✓ Group offer applied — 20% off' : 'Apply group offer — 20% off'}</button>
     </div>
   </div>
   <div class="summary"><div class="co-panel"><h3>Order summary</h3>
-    ${cart.map((c, i) => `<div class="sum-item"><div><div class="sum-item-t">${c.title}</div><div class="sum-item-ty">${c.variantLabel || c.type}</div><span class="sum-remove" data-rm="${i}">Remove</span></div><div class="sum-item-p">${fmt(c.price)}</div></div>`).join('')}
+    ${cart.map((c, i) => `<div class="sum-item"><div><div class="sum-item-t">${c.title}${isGroup ? ' <span style="opacity:.6;font-weight:500">(× 2 seats)</span>' : ''}</div><div class="sum-item-ty">${c.variantLabel || c.type}</div><span class="sum-remove" data-rm="${i}">Remove</span></div><div class="sum-item-p">${fmt(c.price * seats)}</div></div>`).join('')}
     <div class="sum-row"><span>Subtotal</span><span>${fmt(mrpTotal)}</span></div>
     ${saved > 0 ? `<div class="sum-row" style="color:var(--green);font-weight:600"><span>Savings</span><span>− ${fmt(saved)}</span></div>` : ''}
     ${appliedCoupon ? `<div class="sum-row" style="color:var(--green);font-weight:600"><span>Coupon (${appliedCoupon.code})</span><span>− ${fmt(couponDiscount)}</span></div>` : ''}
@@ -966,7 +976,14 @@ function renderCheckout() {
         ItemIds: cart.map(c => c.id).join(', '),
         Total: grandTotal,
         Coupon: appliedCoupon ? appliedCoupon.code : '',
-        Domains: domainsPayload.length ? JSON.stringify(domainsPayload) : ''
+        Domains: domainsPayload.length ? JSON.stringify(domainsPayload) : '',
+        // Group offer: your friend gets their own account + enrollment in
+        // these same courses, not just a discount on yours — see the
+        // 'orders' branch of autoProvisionFromSubmission in resource.js,
+        // which provisions Email2 the same way it provisions Email.
+        Type: isGroup ? 'group' : '',
+        Name2: isGroup ? appliedCoupon.group.name : '',
+        Email2: isGroup ? appliedCoupon.group.email : ''
       };
       const orderData = await createRazorpayOrder(grandTotal, `order_${Date.now()}`, {
         email: e,
