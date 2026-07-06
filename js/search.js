@@ -138,7 +138,7 @@ function sortList(list) {
 
 /* ===== TICKER ===== */
 function initTicker() {
-  const items = ['9.6/10 Avg. Rating', '5,000+ Students', '98.7% Placed in Desired Domain', 'IIM · XLRI · FMS Mentors', 'Live Consulting Projects', 'AIR 1 Case Mentor', '30+ Winning Case PPTs', 'Canva Pro Included'];
+  const items = ['9.6/10 Avg. Rating', '5,000+ Students', '98.7% Placed in Desired Domain', 'IIM · XLRI · FMS Mentors', 'Live Projects Across Domains', 'AIR 1 Case Mentor', '30+ Winning Case PPTs', 'Canva Pro Included'];
   const inner = document.getElementById('tickerInner');
   const html = items.map(t => `<span class="ticker-item">${t}<span class="ticker-dot"></span></span>`).join('');
   inner.innerHTML = html + html;
