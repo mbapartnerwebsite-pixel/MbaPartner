@@ -1013,4 +1013,9 @@ async function renderLeaderboard(myName,myScore,myPct){
    instead of leaving the student to find it themselves. */
 function maybeScrollToLeaderboard(){
   if(params.get('scroll')!=='leaderboard') return;
-  const el=document.querySe
+  const el=document.querySelector('.leaderboard-sec');
+  if(el) setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),400);
+}
+</script>
+</body>
+</html>
