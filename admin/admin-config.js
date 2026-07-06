@@ -451,6 +451,37 @@ const ADMIN_SECTIONS = [
     ]
   },
   {
+    key: 'catGdpi', label: 'CAT GDPI Resources', icon: 'ti-message-star', group: 'CAT / OMETs Portal',
+    desc: 'GD/PI prep resource cards on the CAT/OMETs portal\'s GDPI section. Leave Link blank to show "coming soon".',
+    fields: [
+      { name: 'Type', label: 'Type', type: 'select', options: ['PI', 'GD'], col: true },
+      { name: 'Title', label: 'Title', type: 'text', required: true, col: true },
+      { name: 'Meta', label: 'Small description', type: 'text' },
+      { name: 'Link', label: 'Link', type: 'text' }
+    ]
+  },
+  {
+    key: 'catDomainQA', label: 'CAT Domain Q&A', icon: 'ti-briefcase', group: 'CAT / OMETs Portal',
+    desc: 'Domain-wise interview question resource cards on the CAT/OMETs portal. Leave Link blank to show "coming soon". Add rows one at a time, or bulk-import many at once from Excel below.',
+    bulkImport: { itemLabel: 'resource', keepAddButton: true },
+    fields: [
+      { name: 'Domain', label: 'Domain', type: 'text', required: true, col: true },
+      { name: 'Title', label: 'Title', type: 'text', required: true, col: true },
+      { name: 'Meta', label: 'Small description', type: 'text' },
+      { name: 'Link', label: 'Link', type: 'text' }
+    ]
+  },
+  {
+    key: 'catMentors', label: 'CAT Mentors', icon: 'ti-users', group: 'CAT / OMETs Portal',
+    desc: 'Mentor panel shown on the CAT/OMETs portal.',
+    fields: [
+      { name: 'Name', label: 'Mentor name', type: 'text', required: true, col: true },
+      { name: 'School', label: 'B-school', type: 'text', col: true },
+      { name: 'Converted', label: 'Converted to (e.g. IIM Ahmedabad)', type: 'text' },
+      { name: 'Domain', label: 'Domain', type: 'text' }
+    ]
+  },
+  {
     key: 'catAttempts', label: 'Mock Attempts', icon: 'ti-checklist', group: 'CAT / OMETs Portal',
     desc: 'One row per student per mock paper — created automatically the moment a student submits that paper (nothing to add here yourself). A student can only attempt a given paper once; if someone genuinely needs a retake (e.g. a technical issue mid-exam), delete their row here and they\'ll be able to start that paper again.',
     fields: [
@@ -463,4 +494,7 @@ const ADMIN_SECTIONS = [
       { name: 'Wrong', label: 'Wrong', type: 'number' },
       { name: 'Skipped', label: 'Skipped', type: 'number' },
       { name: 'Percentile', label: 'Percentile', type: 'text' },
-      { name: 'submittedAt', label: 'Submitted at', type: 'text', col: tru
+      { name: 'submittedAt', label: 'Submitted at', type: 'text', col: true }
+    ]
+  }
+];
