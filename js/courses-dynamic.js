@@ -129,7 +129,7 @@ async function hydrateCoursesFromApi() {
       const c = COURSES.find(k => k.id === r.id);
       if (c) {
         EDITABLE.forEach(key => {
-          if (r[key] !== undefined && r[key] !== null && r[key] !== '') { c[key] = r[key]; changed = true; }
+          if (r[key] !== undefined) { c[key] = r[key]; changed = true; }
         });
         mergeDetailFields(c, r);
         return;
